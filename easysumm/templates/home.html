@@ -257,26 +257,56 @@
 
     <!--summarize section starts here-->
     <div id='bg' style="background-image:url('{% static 'img/bg.jpg'%}');">
-  
+   
+   <!--<section class="summarizenow" id="summarizenow">
+        <h1 class="heading"> Summary <span>Summarize Now</span></h1>
+    
+        
+
+        <form method="post" action="{% url 'summarizenow' %}">
+            {% csrf_token %}
+            
+            <textarea name="text" placeholder="EasySummary will summarize your text. Start by writing or pasting something here and then press the summarize button." 
+            class="box" id="" cols="30" rows="10">{{ input_text }}</textarea>
+            <button id="summarize-button" class="btn">Summarize Now</button>
+            
+        </form> 
+    
+        <form>
+        <textarea placeholder="" class="box" id="" cols="30"
+         rows="10" name="output" readonly>{{ summary }}</textarea>
+        </form>
+    
+
+    </section> -->
+
 
     <section class="summarizenow" id="summarizenow">
         <h1 class="heading"> Summary <span>Summarize Now</span></h1>
     
         <form method="post" action="{% url 'summarizenow' %}">
             {% csrf_token %}
+            
+            <!--for uploading a file, for example "Upload Document/PDF"-->
+            <input type="file" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" name="file">
+
+            <!--for input textarea-->
             <textarea name="text" placeholder="EasySummary will summarize your text. Start by writing or pasting something here and then press the summarize button." 
             class="box" id="" cols="30" rows="10">{{ input_text }}</textarea>
-    
+            
+            <!--summarize button to show output-->
             <button id="summarize-button" class="btn">Summarize Now</button>
             <!--<input type="submit" value="Summarize" class="btn" id="summarize-button">-->
         </form>
     
         <form>
+            <!--this is the textarea which shows output summary.-->
         <textarea placeholder="" class="box" id="" cols="30"
          rows="10" name="output" readonly>{{ summary }}</textarea>
         </form>
 
-    </section>
+    </section> 
+
 
 </div>
     <!--summarize section ends here-->
@@ -364,6 +394,8 @@
             },          
         });
 
+
+        //this particular js code is for the page to reload to exact summarize section when summary is shown.
         document.querySelector("#summarizenow").scrollIntoView({
             behavior: 'smooth'
         });
