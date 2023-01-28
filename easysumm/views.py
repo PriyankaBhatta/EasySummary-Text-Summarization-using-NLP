@@ -1,56 +1,63 @@
 from django.shortcuts import render
+import numpy as np
+import pandas as pd
 import nltk
 nltk.download('punkt')
 nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
-import numpy as np
+import io
 import PyPDF2
-from PyPDF2 import PdfFileReader
+from docx2python import docx2python
+from sklearn.metrics.pairwise import cosine_similarity
 
 # Create your views here.
 def home(request):
     return render(request, "home.html")
 
-#def summarizenow(request):
-    #return render(request, "summarizenow.html", {})
+def extract_text_from_pdf(file):
+    # create a pdf reader object
+    pdf_reader = PyPDF2.PdfFileReader(file)
+    # iterate over each page
+    text = ""
+    for page in range(pdf_reader.getNumPages()):
+        text += pdf_reader.getPage(page).extractText()
+    return text
+
+def generate_summary(text, num_sentences):
+    # preprocess the text
+    processed_text = preprocess_text(text)
+    # create the tf-idf matrix
+    vectorizer = TfidfVectorizer()
+    tfidf_matrix = vectorizer.fit_transform(processed_text.splitlines())
+    feature_names = vectorizer.get_feature_names()
+    # calculate the similarity score between each sentence and the entire text
+    sentence_scores = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix)
+    # sort the sentences based on their scores
+    sorted_sentences = np.argsort(sentence_scores.flatten())[::-1]
+    # return the top-n scored sentences as the summary
+    return " ".join([processed_text.splitlines()[i] for i in sorted_sentences[:num_sentences]])
 
 def summarizenow(request):
-    text = ""
-    summary = ""
     if request.method == 'POST':
-        # check if a text is submitted
-        if 'text' in request.POST:
-            text = request.POST.get('text')
-        # check if a file is uploaded
-        elif 'file' in request.FILES:
-            file = request.FILES['file']
-            # check if the file is a pdf
-            if file.content_type == 'application/pdf':
-                pdf_reader = PyPDF2.PdfFileReader(file)
-                text = " ".join([pdf_reader.getPage(i).extractText() for i in range(pdf_reader.numPages)])
-            # check if the file is a doc
-            elif file.content_type in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']:
-                text = file.read().decode()
-        # perform text pre-processing and summarization here
-        tokens = nltk.word_tokenize(text)
-        stopwords = nltk.corpus.stopwords.words("english")
-        filtered_tokens = [token for token in tokens if token.lower() not in stopwords]
-        filtered_text = " ".join(filtered_tokens)
-
-        if filtered_text:
-            tfidf = TfidfVectorizer()
-            scores = tfidf.fit_transform([filtered_text])
-
-            sentence_scores = {}
-            for i, sentence in enumerate(nltk.sent_tokenize(text)):
-                try:
-                    sentence_scores[sentence] = sum(scores[i])
-                except IndexError:
-                    pass
-            N = 10
-            top_sentences = sorted(sentence_scores.items(), key=lambda x: x[1], reverse=True)[:N]
-            summary = " ".join([s[0] for s in top_sentences])
+        input_file = request.FILES.get('input_file')
+        if input_file:
+            if input_file.content_type == 'application/pdf':
+                # handle PDF file input
+                pdf_file = PyPDF2.PdfFileReader(input_file.file)
+                text = ""
+                for page in range(pdf_file.getNumPages()):
+                    text += pdf_file.getPage(page).extractText()
+                    summary = generate_summary(text, 5)
+                    return render(request, 'summarize.html', {'summary': summary})
+            elif input_file.content_type in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']:
+                # handle doc file input
+                doc_file = docx2python(input_file)
+                text = doc_file.get_text()
+                summary = generate_summary(text, 5)
+                return render(request, 'home.html', {'summary': summary})
+            else:
+                return render(request, 'home.html', {'error': 'Invalid file type. Please upload a PDF or DOC file.'})
         else:
-            summary = "The file contains only stopwords and no meaningful text."
-
-    return render(request, 'home.html', {'summary': summary, 'input_text': text})
+            return render(request, 'home.html', {'error': 'Please provide a valid file.'})
+    else:
+        return render(request, 'home.html')
