@@ -323,7 +323,8 @@ section{
 .swiper-pagination-bullet-active{
     background: var(--main-color);
 }
-/*summ section starts*/
+
+/*summ section starts for boxes */
 #bg{
     background: no-repeat;
     background-position: center;
@@ -341,33 +342,13 @@ section{
     margin: .7rem 0;
 
 }
-/*.summarizenow form .box:focus{
-
-    border: var(--border-hover);
-    border-radius: var(--border-radius-hover);
-}*/
 .summarize form textarea{
     resize: none;
 }
-/*summ section ends*/
-/*summarize section*/
-/*#bg{
-    background: no-repeat;
-    background-position: center;
-    background-size: cover;
-}
-.summarizenow form{
-    margin: 0 auto 2rem auto;
-    max-width: 60rem;
-    border-radius: var(--border-radius-hover);
-    padding: 3rem;
-    border: var(--border); 
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-}
-.summarizenow form .box{
-    width: 100%;
+/*sum section ends for boxes */
+
+ /*url section of summarize section starts*/
+ #urlInput {
     padding: 1rem 1.2rem;
     border-radius: .5rem;
     font-size: 1.6rem;
@@ -376,16 +357,12 @@ section{
     color: var(--main-color);
     border: var(--border);
     margin: .7rem 0;
-}
+  }
+  
+/*url section of summarize section ends*/
 
-.summarizenow form .box:focus{
 
-    border: var(--border-hover);
-    border-radius: var(--border-radius-hover);
-}
-.summarizenow form textarea{
-    resize: none;
-} */
+
 /*footer section*/
 .footer .box-container{
     display: grid;
