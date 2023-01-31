@@ -1,5 +1,5 @@
 #This code is a Python script for a web application. 
-#The script implements 3 functions: home, preprocess, and summarizenow.
+#The script implements functions: home, preprocess,tf-idf and summarizenow.
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -65,8 +65,10 @@ def tf_idf(documents):
 # with the input text and summary as context variables. 
 def summarizenow(request):
     if request.method == 'POST':
+        input_text = ""
+
+        #for file input
         if request.FILES.get('file'):
-            #handle file input
             file = request.FILES['file']
             if file.content_type == 'application/pdf':
                 input_text = extract_text_from_pdf(file)
@@ -78,15 +80,22 @@ def summarizenow(request):
         
         #for url
         elif request.POST.get('urlInput'):
-            #handle URL input
             url = request.POST.get('urlInput')
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             input_text = soup.get_text()
-            
-        else:
-            #handle text input
+
+        #for text input    
+        elif request.POST.get('text'):
             input_text = request.POST.get('text', '')
+
+        if input_text:
+            summary = tf_idf([input_text]) # Use AI algorithm to generate summary
+            return render(request, 'home.html', {'input_text': input_text, 'summary':summary})
+        else:
+            #summary = ""
+            return render(request, 'home.html')
             
-        summary = tf_idf([input_text]) # Use AI algorithm to generate summary
+        #summary = tf_idf([input_text]) # Use AI algorithm to generate summary
+    else:  
         return render(request, 'home.html', {'input_text': input_text, 'summary':summary})

@@ -261,22 +261,24 @@
     <section class="summarizenow" id="summarizenow">
         <h1 class="heading"> Summary <span>Summarize Now</span></h1>
     
-        <form method="post" action="{% url 'summarizenow' %}">
+        <form method="post" action="{% url 'summarizenow' %}" enctype="multipart/form-data"> <!--enctype="multipart/form-data" allows file uploads.-->
             {% csrf_token %}
             
             <!--for uploading a file, for example "Upload Document/PDF"-->
-            <input type="file" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" name="file">
+            <input type="file" name="file" id="fileInput" class="box" required>
+        
 
             <!--for url input-->
-            
-            <!--<input type="url" class="form-control" id="urlInput" name="urlInput" placeholder ="Enter your URL here." style="width: 50%" required> -->
- 
             <input type="url" name="urlInput" placeholder="Enter URL here" class="box" id="urlInput" cols="30" rows="10" required>
             
             <!--for input textarea-->
             <textarea name="text" placeholder="EasySummary will summarize your text. Start by writing or pasting something here and then press the summarize button." 
             class="box" id="" cols="30" rows="10">{{ input_text }}</textarea>
             
+            <p>Select Summary Length:</p>
+            <input type="range" min="1" max="3" step="1" value="2" class="slider" id="myRange">
+            <br>
+
             <!--summarize button to show output-->
             <button id="summarize-button" class="btn">Summarize Now</button>
             
@@ -291,6 +293,7 @@
         </form>
     
         <form>
+            <br>
             <!--this is the textarea which shows output summary.-->
         <textarea placeholder="" class="box" id="" cols="30"
          rows="10" name="output" readonly>{{ summary }}</textarea>
@@ -326,9 +329,9 @@
 
         <div class="box">
             <h3>Social Media Links</h3>
-            <a href="#"> <i class="fab fa-facebook-f"></i> Facebook </a>
-            <a href="#"> <i class="fab fa-github"></i> Github </a>
-            <a href="#"> <i class="fab fa-linkedin"></i> Linkedin </a>
+            <a href="https://www.facebook.com/priyankaa.bhatta56" target="_blank"> <i class="fab fa-facebook-f"></i> Facebook </a>
+            <a href="https://github.com/PriyankaBhatta" target="_blank"> <i class="fab fa-github"></i> Github </a>
+            <a href="https://www.linkedin.com/in/priyanka-bhatta/" target="_blank"> <i class="fab fa-linkedin"></i> Linkedin </a>
         </div>
 
     </div>
@@ -390,6 +393,19 @@
         document.querySelector("#summarizenow").scrollIntoView({
             behavior: 'smooth'
         });
+
+        //slider function of summaarize section
+        var slider = document.getElementById("myRange");
+        
+        slider.oninput = function(){
+            if(this.value == 1){
+                output.innerHTML = "Short";
+            } else if (this.value == 2){
+                output.innerHTML = "Medium";
+            } else{
+                output.innerHTML = "Long";
+            }
+        }
     </script>
     
 </body>
