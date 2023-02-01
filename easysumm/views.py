@@ -47,11 +47,9 @@ def tf_idf(documents, length=0.15):
 
 # the summarizenow function returns the home.html template with the input text and summary as context variables. 
 def summarizenow(request):
-    #input_text = ""
-    #summary = ""
+    input_text = ""
+    summary = ""
     if request.method == 'POST':
-        input_text = ""
-        summary = ""
         
         #for url
         if request.POST.get('urlInput'):
@@ -59,14 +57,6 @@ def summarizenow(request):
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             input_text = soup.get_text()
-
-            # Use AI algorithm to generate summary
-            if summary_length == 1:
-                summary = tf_idf([input_text], length=0.15)
-            elif summary_length == 2:
-                summary = tf_idf([input_text], length=0.5)
-            else:
-                summary = tf_idf([input_text], length=0.8)
 
         #for text input    
         elif request.POST.get('text'):
