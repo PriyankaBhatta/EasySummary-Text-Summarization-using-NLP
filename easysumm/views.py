@@ -13,38 +13,19 @@ from nltk.corpus import stopwords                      #reduces noise from text
 nltk.download('stopwords')                        
 stop_words = set(stopwords.words("english"))                     
 from sklearn.feature_extraction.text import TfidfVectorizer
-import PyPDF2
-import docx
+
 
 #The home function is a simple view that returns the home.html template.
 def home(request):
     return render(request, "home.html")
-
-#extract text from pdf files
-def extract_text_from_pdf(pdf_file):
-    pdf_reader = PyPDF2.PdfFileReader(pdf_file)
-    all_text = ""
-    for i in range(pdf_reader.numPages):
-        page = pdf_reader.getPage(i)
-        all_text += page.extractText()
-    return all_text 
-
-#extract text from doc files
-def extract_text_from_doc(doc_file):
-    doc = docx.Document(doc_file)
-    all_text = ""
-    for para in doc.paragraphs:
-        all_text += para.text
-    return all_text 
 
 #This preprocessing step is useful to clean the input text and make it ready for further processing like summary generation.
 def preprocess(document):
     return document
 
 #performs tf-idf operation
-def tf_idf(documents):
-    #documents = [preprocess(document) for document in documents] # preprocess the document
-    
+def tf_idf(documents, length=0.15):
+
     tfidf_vectorizer = TfidfVectorizer()
     tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
     feature_names = tfidf_vectorizer.vocabulary_.keys()
@@ -56,46 +37,55 @@ def tf_idf(documents):
     sentences = documents[0].split('. ')
     sentences_with_scores = [(sentence, tfidf_scores_tuples[index][1]) for index, sentence in enumerate(sentences)]
 
-    top_sentences = sorted(sentences_with_scores, key=lambda x: x[1], reverse=True)[:10]
+    
+    sorted_sentences = sorted(sentences_with_scores, key=lambda x: x[1], reverse=True)
+    top_sentences = sorted_sentences[:int(length * len(sentences))]
+    #top_sentences = sorted(sentences_with_scores, key=lambda x: x[1], reverse=True)[:num_sentences]
     summary = '. '.join([sentence[0] for sentence in top_sentences])
     return summary
 
 
-# the summarizenow function returns the home.html template
-# with the input text and summary as context variables. 
+# the summarizenow function returns the home.html template with the input text and summary as context variables. 
 def summarizenow(request):
+    #input_text = ""
+    #summary = ""
     if request.method == 'POST':
         input_text = ""
-
-        #for file input
-        if request.FILES.get('file'):
-            file = request.FILES['file']
-            if file.content_type == 'application/pdf':
-                input_text = extract_text_from_pdf(file)
-            elif file.content_type == 'application/msword':
-                input_text = extract_text_from_doc(file)
-            else:
-                #handle other type files
-                pass
+        summary = ""
         
         #for url
-        elif request.POST.get('urlInput'):
+        if request.POST.get('urlInput'):
             url = request.POST.get('urlInput')
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             input_text = soup.get_text()
+
+            # Use AI algorithm to generate summary
+            if summary_length == 1:
+                summary = tf_idf([input_text], length=0.15)
+            elif summary_length == 2:
+                summary = tf_idf([input_text], length=0.5)
+            else:
+                summary = tf_idf([input_text], length=0.8)
 
         #for text input    
         elif request.POST.get('text'):
             input_text = request.POST.get('text', '')
 
         if input_text:
-            summary = tf_idf([input_text]) # Use AI algorithm to generate summary
-            return render(request, 'home.html', {'input_text': input_text, 'summary':summary})
+            #get the selected summary length value
+            summary_length = int(request.POST.get("summary_length", 2))
+        
+            # Use AI algorithm to generate summary
+            if summary_length == 1:
+                summary = tf_idf([input_text], length=0.15)
+            elif summary_length == 2:
+                summary = tf_idf([input_text], length=0.5)
+            else:
+                summary = tf_idf([input_text], length=0.8)
+           
+            return render(request, 'home.html',{'input_text': input_text, 'summary':summary}) 
         else:
-            #summary = ""
-            return render(request, 'home.html')
-            
-        #summary = tf_idf([input_text]) # Use AI algorithm to generate summary
+            return render(request, 'home.html',{'input_text': input_text, 'summary':summary})
     else:  
-        return render(request, 'home.html', {'input_text': input_text, 'summary':summary})
+        return render(request, 'home.html',{'input_text': input_text, 'summary':summary})
