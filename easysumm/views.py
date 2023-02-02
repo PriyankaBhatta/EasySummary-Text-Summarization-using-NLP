@@ -57,6 +57,7 @@ def summarizenow(request):
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             input_text = soup.get_text()
+            
 
         #for text input    
         elif request.POST.get('text'):
