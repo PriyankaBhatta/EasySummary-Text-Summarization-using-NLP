@@ -40,7 +40,6 @@ def tf_idf(documents, length=0.15):
     
     sorted_sentences = sorted(sentences_with_scores, key=lambda x: x[1], reverse=True)
     top_sentences = sorted_sentences[:int(length * len(sentences))]
-    #top_sentences = sorted(sentences_with_scores, key=lambda x: x[1], reverse=True)[:num_sentences]
     summary = '. '.join([sentence[0] for sentence in top_sentences])
     return summary
 
@@ -58,22 +57,30 @@ def summarizenow(request):
             soup = BeautifulSoup(response.text, 'html.parser')
             input_text = soup.get_text()
             
-
+            
         #for text input    
         elif request.POST.get('text'):
             input_text = request.POST.get('text', '')
 
         if input_text:
+
             #get the selected summary length value
             summary_length = int(request.POST.get("summary_length", 2))
         
             # Use AI algorithm to generate summary
             if summary_length == 1:
+                
                 summary = tf_idf([input_text], length=0.15)
+
             elif summary_length == 2:
+                
                 summary = tf_idf([input_text], length=0.5)
+
             else:
+                
                 summary = tf_idf([input_text], length=0.8)
+
+            
            
             return render(request, 'home.html',{'input_text': input_text, 'summary':summary}) 
         else:
