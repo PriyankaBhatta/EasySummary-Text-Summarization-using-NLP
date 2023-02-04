@@ -17,9 +17,6 @@
     <!-- custom css file link  -->
     <link rel="stylesheet" href='{% static 'style.css' %}'>
     
-    <!-- custom js file link  -->
-    <!--<script src="{% static 'script.js' %}"></script>-->
-    
 
 </head>
 <body>
@@ -279,7 +276,12 @@
             class="box" id="" cols="30" rows="10">{{ input_text }}</textarea>
             
             <p>Select Summary Length:</p>
-            <input type="range" min="1" max="3" step="1" value="2" class="slider" id="myRange">
+            <select id="summary_length">
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+            </select>
+            <!--<input type="range" min="1" max="3" step="1" value="2" class="slider" id="myRange">-->
             <br>
 
             <!--summarize button to show output-->
@@ -397,18 +399,24 @@
             behavior: 'smooth'
         });
 
-        //slider function of summaarize section
-        var slider = document.getElementById("myRange").value;
+        //slider function of summarizenow section
+        document.getElementById("summary_length").addEventListener("change", function() {
+            var selectedValue = this.value;
+            // make an AJAX request to the server to retrieve the summary of the desired length
+          });
         
-        slider.oninput = function(){
-            if(this.value == 1){
-                output.innerHTML = "Short";
-            } else if (this.value == 2){
-                output.innerHTML = "Medium";
-            } else{
-                output.innerHTML = "Long";
-            }
-        }
+        document.getElementById("summary_length").addEventListener("change", function() {
+            var selectedValue = this.value;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/summarizenow/?summary_length=" + selectedValue, true);
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState === 4 && xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                // update the page with the returned summary
+              }
+            };
+            xhr.send();
+        });
 
         //for one input at a time to summarize
         // get the file input, URL input, and textarea elements
