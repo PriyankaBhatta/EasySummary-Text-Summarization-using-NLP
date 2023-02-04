@@ -1,5 +1,4 @@
-#This code is a Python script for a web application. 
-#The script implements functions: 
+#This code is a Python script for a web application.  
 
 from django.shortcuts import render
 from django.http import HttpResponse
