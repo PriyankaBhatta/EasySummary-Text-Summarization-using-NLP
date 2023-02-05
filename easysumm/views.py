@@ -3,6 +3,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.utils.translation import gettext_lazy as _
 import requests
 from bs4 import BeautifulSoup
 import numpy as np                                     #used for mathematical operations and numerical computations
@@ -15,7 +16,6 @@ stop_words = set(stopwords.words("english"))
 from sklearn.feature_extraction.text import TfidfVectorizer
 import networkx as nx
 from sklearn.metrics.pairwise import cosine_similarity
-from ajax.decorators import ajax
 
 '''
 #The home function is a simple view that returns the home.html template.
@@ -117,7 +117,7 @@ def tf_idf(input_text, length=0.15):
     tfidf_scores = zip(tfidf_matrix.nonzero()[0], tfidf_matrix.data)
     tfidf_scores_tuples = [(index, score) for index, score in tfidf_scores]
 
-    #sentences = documents[0].split('. ')
+    
     sentences = [sentence for sentence in input_text[0].split('. ') if not sentence.isdigit() and len(sentence) > 1]
     sentences_with_scores = [(sentence, tfidf_scores_tuples[index][1]) for index, sentence in enumerate(sentences)]
 
@@ -150,50 +150,60 @@ def text_similarity(sentence1, sentence2):
     similarity = cosine_similarity(vector1.reshape(1,-1), vector2.reshape(1,-1))
     return similarity[0][0]
 
-@ajax
+
 # summarizenow is the main function that is exposed as a view in the Django web framework and handles processing user inputs,calling the other functions as necessary, and rendering the output in a template.
 def summarizenow(request):
     input_text = ""
     summary = ""
-    if request.method == 'POST' or request.is_ajax():
-        
-        #for url
-        if request.POST.get('urlInput'):
-            url = request.POST.get('urlInput')
-            response = requests.get(url)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            input_text = soup.get_text()
+    if request.method == 'POST' or request.method == 'GET':
+        if request.method == 'POST':
+            #for url
+            if request.POST.get('urlInput'):
+                url = request.POST.get('urlInput')
+                response = requests.get(url)
+                soup = BeautifulSoup(response.text, 'html.parser')
+                input_text = soup.get_text()
             
             
-        #for text input    
-        elif request.POST.get('text'):
-            input_text = request.POST.get('text', '')
+            #for text input    
+            elif request.POST.get('text'):
+                input_text = request.POST.get('text', '')
 
-        if input_text:
-
-            #get the selected summary length value
-            summary_length = int(request.POST.get("summary_length", 2))
+            if input_text:
+                #get the selected summary length value
+                summary_length = int(request.POST.get("summary_length", 2))
         
+                # Use AI algorithm to generate summary
+                if summary_length == 1:
+                    summary = text_rank([input_text], length=0.15)
+
+                elif summary_length == 2:
+                    summary = text_rank([input_text], length=0.5)
+
+                else:   
+                    summary = text_rank([input_text], length=0.8)
+
+        else:
+            summary_length = int(request.GET.get("summary_length", 2))
             # Use AI algorithm to generate summary
             if summary_length == 1:
-                
+
                 summary = text_rank([input_text], length=0.15)
 
             elif summary_length == 2:
-                
+
                 summary = text_rank([input_text], length=0.5)
 
             else:
-                
+
                 summary = text_rank([input_text], length=0.8)
 
-            if request.is_ajax():
-                summary_length = request.GET.get("summary_length", "medium")
+        if request.method == 'GET':
+            summary_length = request.GET.get("summary_length","medium")
 
-                # retrieve the summary based on the desired length
-                return JsonResponse({"summary": summary})
-            else:
-                return render(request, 'home.html',{'input_text': input_text, 'summary': summary})
+            #retrive the summary based on the desired length
+            return JsonResponse({"summary": summary})
+
         else:
             return render(request, 'home.html',{'input_text': input_text, 'summary':summary}) 
     else:  
