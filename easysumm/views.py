@@ -1,4 +1,6 @@
+#Made by: Priyanka Bhatta
 #This code is a Python script for a web application.  
+
 
 from django.shortcuts import render
 from django.http import HttpResponse
