@@ -194,7 +194,7 @@ def summarizenow(request):
 
             elif summary_length == 2:
 
-                summary = text_rank([input_text], length=0.5)
+                summary = tf_idf([input_text], length=0.5)
 
             else:
 
