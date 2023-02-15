@@ -5,7 +5,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
-from django.utils.translation import gettext_lazy as _
+
 import requests
 from bs4 import BeautifulSoup
 import numpy as np                                     #used for mathematical operations and numerical computations
@@ -19,7 +19,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import networkx as nx
 from sklearn.metrics.pairwise import cosine_similarity
 
-'''
+
 #The home function is a simple view that returns the home.html template.
 def home(request):
     return render(request, "home.html")
@@ -211,3 +211,4 @@ def summarizenow(request):
     else:  
         return render(request, 'home.html',{'input_text': input_text, 'summary':summary})
 
+'''
