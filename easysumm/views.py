@@ -27,13 +27,7 @@ from django.core.files.uploadedfile import UploadedFile  #for handling doc files
 from docx import Document
 
 '''
-#The home function is a simple view that returns the home.html template.
-def home(request):
-    return render(request, "home.html")
 
-#This preprocessing step is useful to clean the input text and make it ready for further processing like summary generation.
-def preprocess(document):
-    return document
 
 #performs tf-idf operation
 def tf_idf(documents, length=0.15):
