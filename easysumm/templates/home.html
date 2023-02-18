@@ -285,7 +285,7 @@
             <br>
 
             <!--summarize button to show output-->
-            <button id="summarize-button" class="btn">Summarize Now</button>
+            <button id="summarize-button" class="btn" onclick="submitForm()">Summarize Now</button>
             
             <!--to handle the URL input and display the summarized text-->
             {% if output_text %}
@@ -415,52 +415,36 @@
               });
             });
           });
+    
+    function submitForm() {
+            var fileInput = document.getElementById('fileInput');
+            var urlInput = document.getElementById('urlInput');
+            var textInput = document.getElementsByName('text')[0];
+            var summaryLength = document.getElementById('summary_length');
+            if (fileInput.value) {
+                fileInput.required = true;
+                urlInput.required = false;
+                textInput.required = false;
+            } else if (urlInput.value) {
+                fileInput.required = false;
+                urlInput.required = true;
+                textInput.required = false;
+            } else if (textInput.value) {
+                fileInput.required = false;
+                urlInput.required = false;
+                textInput.required = true;
+            } else {
+                fileInput.required = false;
+                urlInput.required = false;
+                textInput.required = false;
+                return;
+            }
+            summaryLength.disabled = false;
+            document.forms[0].submit();
+        }
           
 
-        //for one input at a time to summarize
-        // get the file input, URL input, and textarea elements
-        const fileInput = document.getElementById("fileInput");
-        const urlInput = document.getElementById("urlInput");
-        const textInput = document.querySelector("textarea[name='text']");
 
-        // listen for changes in the file input
-        fileInput.addEventListener("change", function () {
-        // if the file input is filled, make the URL and text inputs not required
-        urlInput.required = false;
-        textInput.required = false;
-
-        // if the file input is empty, make the URL and text inputs required
-        if (!fileInput.value) {
-             urlInput.required = true;
-             textInput.required = true;
-            }
-        });
-
-        // listen for changes in the URL input
-        urlInput.addEventListener("change", function () {
-        // if the URL input is filled, make the file and text inputs not required
-        fileInput.required = false;
-        textInput.required = false;
-
-        // if the URL input is empty, make the file and text inputs required
-        if (!urlInput.value) {
-            fileInput.required = true;
-            textInput.required = true;
-        }
-    });
-
-        // listen for changes in the text input
-        textInput.addEventListener("input", function () {
-        // if the text input is filled, make the file and URL inputs not required
-        fileInput.required = false;
-        urlInput.required = false;
-
-        // if the text input is empty, make the file and URL inputs required
-        if (!textInput.value) {
-            fileInput.required = true;
-            urlInput.required = true;
-        }
-    });
 
     </script> 
     
