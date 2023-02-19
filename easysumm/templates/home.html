@@ -261,26 +261,27 @@
     <section class="summarizenow" id="summarizenow">
         <h1 class="heading"> Summary <span>Summarize Now</span></h1>
     
-        <form method="post" action="{% url 'summarizenow' %}" enctype="multipart/form-data"> 
+        <form method="post" action="{% url 'summarizenow' %}" enctype="multipart/form-data"> <!--enctype="multipart/form-data" allows file uploads.-->
             {% csrf_token %}
             
             <!--for uploading a file, for example "Upload Document/PDF"-->
-            <input type="file" name="file" id="fileInput" class="box">
+            <input type="file" name="file" id="fileInput" class="box" required>
             <br>
 
             <!--for url input-->
-            <input type="url" name="urlInput" placeholder="Enter URL here" class="box" id="urlInput" cols="30" rows="10">
+            <input type="url" name="urlInput" placeholder="Enter URL here" class="box" id="urlInput" cols="30" rows="10" required>
             
             <!--for input textarea-->
             <textarea name="text" placeholder="EasySummary will summarize your text. Start by writing or pasting something here and then press the summarize button." 
             class="box" id="" cols="30" rows="10">{{ input_text }}</textarea>
             
             <p>Select Summary Length:</p>
-            <select name="summary_length" id="summary_length">
-                <option value="1">Small</option>
-                <option value="2">Medium</option>
-                <option value="3">Large</option>
+            <select id="summary_length">
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
             </select>
+            <!--<input type="range" min="1" max="3" step="1" value="2" class="slider" id="myRange">-->
             <br>
 
             <!--summarize button to show output-->
@@ -444,35 +445,6 @@
           
 
 
-<<<<<<< HEAD
-=======
-    function submitForm() {
-        var fileInput = document.getElementById('fileInput');
-        var urlInput = document.getElementById('urlInput');
-        var textInput = document.getElementsByName('text')[0];
-        var summaryLength = document.getElementById('summary_length');
-        if (fileInput.value) {
-            fileInput.required = true;
-            urlInput.required = false;
-            textInput.required = false;
-        } else if (urlInput.value) {
-            fileInput.required = false;
-            urlInput.required = true;
-            textInput.required = false;
-        } else if (textInput.value) {
-            fileInput.required = false;
-            urlInput.required = false;
-            textInput.required = true;
-        } else {
-            fileInput.required = false;
-            urlInput.required = false;
-            textInput.required = false;
-            return;
-        }
-        summaryLength.disabled = false;
-        document.forms[0].submit();
-    }
->>>>>>> origin/master
 
     </script> 
     
