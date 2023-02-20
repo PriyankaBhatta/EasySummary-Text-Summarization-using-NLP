@@ -261,7 +261,7 @@
     <section class="summarizenow" id="summarizenow">
         <h1 class="heading"> Summary <span>Summarize Now</span></h1>
     
-        <form method="post" action="{% url 'summarizenow' %}" enctype="multipart/form-data"> <!--enctype="multipart/form-data" allows file uploads.-->
+        <form method="post" action="{% url 'summarizenow' %}" enctype="multipart/form-data"> 
             {% csrf_token %}
             
             <!--for uploading a file, for example "Upload Document/PDF"-->
@@ -270,39 +270,37 @@
 
             <!--for url input-->
             <input type="url" name="urlInput" placeholder="Enter URL here" class="box" id="urlInput" cols="30" rows="10" required>
-            
+        
             <!--for input textarea-->
             <textarea name="text" placeholder="EasySummary will summarize your text. Start by writing or pasting something here and then press the summarize button." 
-            class="box" id="" cols="30" rows="10">{{ input_text }}</textarea>
+            class="box" id="" cols="30" rows="10">{{ input_text }}</textarea>      
+            <br>
             
-            <p>Select Summary Length:</p>
+            <p>Summary Length: </p>
             <select id="summary_length">
                 <option value="small">Small</option>
                 <option value="medium">Medium</option>
                 <option value="large">Large</option>
             </select>
-            <!--<input type="range" min="1" max="3" step="1" value="2" class="slider" id="myRange">-->
-            <br>
 
+            <br>
             <!--summarize button to show output-->
             <button id="summarize-button" class="btn" onclick="submitForm()">Summarize Now</button>
-            
-            <!--to handle the URL input and display the summarized text-->
-            {% if output_text %}
-            <div id="output-text">{{ output_text|linebreaksbr }}</div>
 
-            {% endif %}
-            {% if error_message %}
-            <div id="error-message">{{ error_message }}</div>
-            {% endif %}
         </form>
     
         <form>
-            <br>
-            <!--this is the textarea which shows output summary.-->
+            <br> 
+        <!--this is the textarea which shows output summary.-->
+        {% if output_text %}
         <textarea placeholder="" class="box" id="" cols="30"
-         rows="10" name="output" readonly>{{ summary }}</textarea>
-        </form>
+         rows="10" name="output" readonly>{{ output_text }}</textarea>
+        {% endif %}
+
+        {% if error_message %}
+        <div id="error-message">{{ error_message }}</div>
+        {% endif %}
+        </form> 
 
     </section> 
 
@@ -402,21 +400,13 @@
         //this is jquery code to make summary_length useful
         $(document).ready(function() {
             $("#summary_length").on("change", function() {
-              var selectedValue = this.value;
-              $.ajax({
-                type: "GET",
-                url: "/summarizenow/",
-                data: {
-                  summary_length: selectedValue
-                },
-                success: function(data) {
-                  // update the page with the returned summary
-                }
-              });
+                var selectedValue = this.value;
+                $("#summary_length").val(selectedValue);
             });
-          });
-    
-    function submitForm() {
+        });
+        
+
+        function submitForm() {
             var fileInput = document.getElementById('fileInput');
             var urlInput = document.getElementById('urlInput');
             var textInput = document.getElementsByName('text')[0];
@@ -443,7 +433,6 @@
             document.forms[0].submit();
         }
           
-
 
 
     </script> 
