@@ -393,9 +393,25 @@
 
 
         //this particular js code is for the page to reload to exact summarize section when summary is shown.
-        document.querySelector("#summarizenow").scrollIntoView({
-            behavior: 'smooth'
-        });
+        //document.querySelector("#summarizenow").scrollIntoView({
+            //behavior: 'smooth'
+        //});
+
+        // Check if URL contains the summary parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromSummary = urlParams.get('fromSummary');
+
+        // Check if user is on the home page or the summary page
+        const currentPage = window.location.pathname;
+        const isHomePage = currentPage === '/';
+
+        if (fromSummary || !isHomePage) {
+            // Scroll to the summarizenow section if the user is on the summary page
+            document.querySelector("#summarizenow").scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
         
         //this is jquery code to make summary_length useful
         $(document).ready(function() {
@@ -433,6 +449,7 @@
             document.forms[0].submit();
         }
           
+       
 
 
     </script> 

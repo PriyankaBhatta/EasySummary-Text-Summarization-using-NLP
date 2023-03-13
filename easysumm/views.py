@@ -2,7 +2,8 @@
 #Made by: Priyanka Bhatta
 #This code is a Python script for a web application.  
 
-from django.shortcuts import render
+from django.shortcuts import render 
+from django.shortcuts import redirect
 from django.http import HttpResponse
 import requests
 import pandas as pd
@@ -109,9 +110,9 @@ def summarizenow(request):
             if summary_length == 'small':
                 summary_length = 3
             elif summary_length == 'medium':
-                summary_length = 5
-            else:
                 summary_length = 7
+            else:
+                summary_length = 9
 
             summary = summarize('.\n'.join(paragraphs), summary_length)
             output_text = summary
@@ -126,11 +127,11 @@ def summarizenow(request):
             if len(input_text.strip()) > 0:
                 summary_length = request.POST.get('summary_length','small')
                 if summary_length == 'small':
-                    summary_length = 3
-                elif summary_length == 'medium':
                     summary_length = 5
+                elif summary_length == 'medium':
+                    summary_length = 9
                 else:
-                    summary_length = 7
+                    summary_length = 11
 
                 summary = summarize(input_text, summary_length)
                 output_text = summary
