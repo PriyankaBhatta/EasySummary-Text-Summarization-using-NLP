@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup
 import PyPDF2
-import io
+from PyPDF2 import PdfFileReader
 from PyPDF2 import PdfFileReader
 import docx2txt
 import re
@@ -96,6 +96,31 @@ def get_paragraphs_from_file(file):
         paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()]
     return paragraphs
 
+#this function is for PDF files only
+def get_summary_from_PDF(file, summary_length):
+    pdf_reader = PdfFileReader(file)
+    summary = ''
+
+    #extract abstract, introduction and conclusion parts
+    for page_num in range(min(3, pdf_reader.getNumPages())):
+        page = pdf_reader.getPage(page_num)
+        text = page.extractText().replace('\n', '')
+        if 'abstract' in text.lower():
+            summary += text
+        elif 'introduction' in text.lower():
+            summary += text
+        elif 'conclusion' in text.lower():
+            summary += text
+
+    #if no abstarct, introduction or conclusion is found, use first page
+    if not summary:
+        page = pdf_reader.getPage(0)
+        summary = page.extractText().replace('\n', '')
+
+    #summarize the extracted text
+    return summarizenow(summary, summary_length)
+
+#this function carries out the summary using summarizenow tag in html.
 def summarizenow(request):
     output_text = ''
     error_message = ''
@@ -108,14 +133,24 @@ def summarizenow(request):
             paragraphs = get_paragraphs_from_file(file)
             summary_length = request.POST.get('summary_length','small')
             if summary_length == 'small':
-                summary_length = 3
+                summary_length = 5
             elif summary_length == 'medium':
-                summary_length = 7
-            else:
                 summary_length = 9
+            else:
+                summary_length = 11
 
-            summary = summarize('.\n'.join(paragraphs), summary_length)
+            
+            # get summary of abstract, introduction, and conclusion
+            abstract_intro_conclusion_summary = get_summary_from_PDF(paragraphs)
+            summary = summarize(abstract_intro_conclusion_summary, summary_length)
+            
+            # add remaining content to the summary
+            summary += summarize('.\n'.join(paragraphs), summary_length)
+
             output_text = summary
+
+            #summary = summarize('.\n'.join(paragraphs), summary_length)
+            #output_text = summary
 
         except:
             try:
