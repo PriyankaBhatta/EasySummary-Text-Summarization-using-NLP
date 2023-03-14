@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup
 import PyPDF2
+import docx2txt
 from PyPDF2 import PdfFileReader
 from PyPDF2 import PdfFileReader
 import docx2txt
@@ -25,6 +26,7 @@ stop_words = stopwords.words('english')
 def home(request):
     return render(request, "home.html")
 
+#this is the tf-idf function
 def summarize(input_text, summary_length):
     sentences = sent_tokenize(input_text)
     vectorizer = TfidfVectorizer(stop_words=stop_words)
@@ -40,6 +42,7 @@ def summarize(input_text, summary_length):
     summary = [sentences[i] for i in top_sentence_indices]
     return ' '.join(summary)
 
+#this function will only extract <p> tags from URL's
 def get_paragraphs(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -50,33 +53,7 @@ def get_paragraphs(url):
         clean_text = re.sub(r'\[\d+\]', '', text) # remove numbers like [17], [71], etc.
         clean_paragraphs.append(clean_text)
     return '\n'.join(clean_paragraphs)
-    
-'''
-#this two functions work
-def summarize_file(file, summary_length):
-    # Extract paragraphs
-    paragraphs = extract_paragraphs(file)
-
-    # Join paragraphs into single string
-    input_text = '\n'.join(paragraphs)
-
-    # Summarize the text
-    return summarize(input_text, summary_length)
-
-
-def extract_paragraphs(file):
-    if file.name.endswith('.docx'):
-        text = docx2txt.process(file)
-        paragraphs = [p for p in text.split('\n') if len(p.strip()) > 0]
-    elif file.name.endswith('.pdf'):
-        pdf_reader = PdfFileReader(file)
-        pages = [pdf_reader.getPage(i).extractText() for i in range(pdf_reader.getNumPages())]
-        text = '\n'.join(pages)
-        paragraphs = [p for p in text.split('\n') if len(p.strip()) > 0]
-    else:
-        paragraphs = []
-    return paragraphs
-'''
+'''   
 def get_paragraphs_from_file(file):
     paragraphs = []
     # Handle PDF file
@@ -97,11 +74,11 @@ def get_paragraphs_from_file(file):
     return paragraphs
 
 #this function is for PDF files only
-def get_summary_from_PDF(file, summary_length):
+def get_summary_from_PDF(file):
     pdf_reader = PdfFileReader(file)
     summary = ''
 
-    #extract abstract, introduction and conclusion parts
+    # extract abstract, introduction and conclusion parts
     for page_num in range(min(3, pdf_reader.getNumPages())):
         page = pdf_reader.getPage(page_num)
         text = page.extractText().replace('\n', '')
@@ -118,8 +95,33 @@ def get_summary_from_PDF(file, summary_length):
         summary = page.extractText().replace('\n', '')
 
     #summarize the extracted text
-    return summarizenow(summary, summary_length)
+    return summary
+'''
 
+def extract_text(file_path):
+    if file_path.endswith('.docx'):
+        text = docx2txt.process(file_path)
+    elif file_path.endswith('.pdf'):
+        with open(file_path, 'rb') as f:
+            reader = PyPDF2.PdfFileReader(f)
+            text = ''
+            for i in range(reader.getNumPages()):
+                text += reader.getPage(i).extractText()
+    else:
+        raise ValueError('Unsupported file format')
+        
+    abstract_start = text.find('Abstract')
+    intro_start = text.find('Introduction')
+    conclusion_start = text.find('Conclusion')
+    
+    if abstract_start != -1 and intro_start != -1 and conclusion_start != -1:
+        abstract = text[abstract_start:intro_start]
+        intro = text[intro_start:conclusion_start]
+        conclusion = text[conclusion_start:]
+        return abstract + intro + conclusion
+    else:
+        raise ValueError('Could not find required sections in the document')
+    
 #this function carries out the summary using summarizenow tag in html.
 def summarizenow(request):
     output_text = ''
@@ -130,28 +132,26 @@ def summarizenow(request):
     if request.method == 'POST':
         try:
             file = request.FILES['file']
-            paragraphs = get_paragraphs_from_file(file)
-            summary_length = request.POST.get('summary_length','small')
-            if summary_length == 'small':
-                summary_length = 5
-            elif summary_length == 'medium':
-                summary_length = 9
+            if file.name.endswith('.pdf'):
+                input_text = extract_text(file, 'pdf')
+            elif file.name.endswith('.docx'):
+                input_text = extract_text(file,'docx')
+
+            if len(input_text.strip()) > 0:
+                summary_length = request.POST.get('summary_length', 'small')
+                if summary_length == 'small':
+                    summary_length = 7
+                elif summary_length == 'medium':
+                    summary_length = 9
+                else:
+                    summary_length = 11
+
+                    summary = summarize(input_text, summary_length)
+                    output_text = summary
             else:
-                summary_length = 11
+                error_message = 'The file could not be processed. Please upload a valid file.'
 
-            
-            # get summary of abstract, introduction, and conclusion
-            abstract_intro_conclusion_summary = get_summary_from_PDF(paragraphs)
-            summary = summarize(abstract_intro_conclusion_summary, summary_length)
-            
-            # add remaining content to the summary
-            summary += summarize('.\n'.join(paragraphs), summary_length)
-
-            output_text = summary
-
-            #summary = summarize('.\n'.join(paragraphs), summary_length)
-            #output_text = summary
-
+                
         except:
             try:
                 url = request.POST['urlInput']
