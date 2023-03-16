@@ -140,7 +140,7 @@ def summarizenow(request):
             if len(input_text.strip()) > 0:
                 summary_length = request.POST.get('summary_length', 'small')
                 if summary_length == 'small':
-                    summary_length = 7
+                    summary_length = 5
                 elif summary_length == 'medium':
                     summary_length = 9
                 else:
