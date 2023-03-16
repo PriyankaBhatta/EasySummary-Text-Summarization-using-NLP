@@ -98,29 +98,30 @@ def get_summary_from_PDF(file):
     return summary
 '''
 
-def extract_text(file_path):
-    if file_path.endswith('.docx'):
+def extract_text(file_path, file_format):
+    if file_format == 'docx':
         text = docx2txt.process(file_path)
-    elif file_path.endswith('.pdf'):
+    elif file_format == 'pdf':
         with open(file_path, 'rb') as f:
             reader = PyPDF2.PdfFileReader(f)
             text = ''
             for i in range(reader.getNumPages()):
                 text += reader.getPage(i).extractText()
     else:
-        raise ValueError('Unsupported file format')
-        
+        raise ValueError('Unsupported file format.')
+    
     abstract_start = text.find('Abstract')
     intro_start = text.find('Introduction')
     conclusion_start = text.find('Conclusion')
-    
+
     if abstract_start != -1 and intro_start != -1 and conclusion_start != -1:
-        abstract = text[abstract_start:intro_start]
-        intro = text[intro_start:conclusion_start]
+        abstract = text[abstract_start: intro_start]
+        intro = text[intro_start: conclusion_start]
         conclusion = text[conclusion_start:]
+        
         return abstract + intro + conclusion
     else:
-        raise ValueError('Could not find required sections in the document')
+        raise ValueError('Could not find required sections in the document.')
     
 #this function carries out the summary using summarizenow tag in html.
 def summarizenow(request):
@@ -133,9 +134,9 @@ def summarizenow(request):
         try:
             file = request.FILES['file']
             if file.name.endswith('.pdf'):
-                input_text = extract_text(file, 'pdf')
+                input_text = extract_text(file, file.name.split('.')[-1])
             elif file.name.endswith('.docx'):
-                input_text = extract_text(file,'docx')
+                input_text = extract_text(file, file.name.split('.')[-1])
 
             if len(input_text.strip()) > 0:
                 summary_length = request.POST.get('summary_length', 'small')
@@ -146,8 +147,9 @@ def summarizenow(request):
                 else:
                     summary_length = 11
 
-                    summary = summarize(input_text, summary_length)
-                    output_text = summary
+                summary = summarize(input_text, summary_length)
+                output_text = summary
+                
             else:
                 error_message = 'The file could not be processed. Please upload a valid file.'
 
