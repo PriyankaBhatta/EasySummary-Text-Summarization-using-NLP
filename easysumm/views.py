@@ -54,33 +54,8 @@ def get_paragraphs(url):
         clean_text = re.sub(r'\[\d+\]', '', text) # remove numbers like [17], [71], etc.
         clean_paragraphs.append(clean_text)
     return '\n'.join(clean_paragraphs)
-'''
-def extract_text(file_path, file_format):
-    if file_format == 'docx':
-        text = docx2txt.process(file_path)
-    elif file_format == 'pdf':
-        with open(file_path, 'rb') as f:
-            reader = PyPDF2.PdfFileReader(f)
-            text = ''
-            for i in range(reader.getNumPages()):
-                text += reader.getPage(i).extractText()
-    else:
-        raise ValueError('Unsupported file format.')
-    
-    abstract_start = text.find('Abstract')
-    intro_start = text.find('Introduction')
-    conclusion_start = text.find('Conclusion')
 
-    if abstract_start != -1 and intro_start != -1 and conclusion_start != -1:
-        abstract = text[abstract_start: intro_start]
-        intro = text[intro_start: conclusion_start]
-        conclusion = text[conclusion_start:]
-        
-        return abstract + intro + conclusion
-    else:
-        raise ValueError('Could not find required sections in the document.')
-'''
-
+#this function is used to extract text from files 
 def extract_text(file_path, file_format, summary_length):
     if file_format == 'docx':
         doc = docx.Document(file_path)
@@ -153,6 +128,7 @@ def extract_text(file_path, file_format, summary_length):
     
     else:
         raise ValueError('Unsupported file format.')
+
 
 #this function carries out the summary using summarizenow tag in html.
 def summarizenow(request):
