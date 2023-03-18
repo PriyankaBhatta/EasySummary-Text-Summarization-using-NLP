@@ -363,7 +363,7 @@
         };
 
         document.querySelectorAll('.image-slider img').forEach(images =>{
-            images.onclick = () =>{
+            images.onclick = () => {
                 var src = images.getAttribute('src');
                 document.querySelector('.main-home-image').src = src;
             };
@@ -392,10 +392,7 @@
         });
 
 
-        //this particular js code is for the page to reload to exact summarize section when summary is shown.
-        //document.querySelector("#summarizenow").scrollIntoView({
-            //behavior: 'smooth'
-        //});
+        
 
         // Check if URL contains the summary parameter
         const urlParams = new URLSearchParams(window.location.search);

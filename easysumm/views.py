@@ -53,50 +53,7 @@ def get_paragraphs(url):
         clean_text = re.sub(r'\[\d+\]', '', text) # remove numbers like [17], [71], etc.
         clean_paragraphs.append(clean_text)
     return '\n'.join(clean_paragraphs)
-'''   
-def get_paragraphs_from_file(file):
-    paragraphs = []
-    # Handle PDF file
-    if file.name.endswith('.pdf'):
-        pdf_reader = PdfFileReader(file)
-        for i in range(pdf_reader.getNumPages()):
-            page = pdf_reader.getPage(i)
-            text = page.extractText()
-            paragraphs += [p.strip() for p in text.split('\n\n') if p.strip()]
-    # Handle DOCX file
-    elif file.name.endswith('.docx'):
-        text = docx2txt.process(file)
-        paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()]
-    # Handle other file types
-    else:
-        text = file.read().decode('utf-8')
-        paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()]
-    return paragraphs
 
-#this function is for PDF files only
-def get_summary_from_PDF(file):
-    pdf_reader = PdfFileReader(file)
-    summary = ''
-
-    # extract abstract, introduction and conclusion parts
-    for page_num in range(min(3, pdf_reader.getNumPages())):
-        page = pdf_reader.getPage(page_num)
-        text = page.extractText().replace('\n', '')
-        if 'abstract' in text.lower():
-            summary += text
-        elif 'introduction' in text.lower():
-            summary += text
-        elif 'conclusion' in text.lower():
-            summary += text
-
-    #if no abstarct, introduction or conclusion is found, use first page
-    if not summary:
-        page = pdf_reader.getPage(0)
-        summary = page.extractText().replace('\n', '')
-
-    #summarize the extracted text
-    return summary
-'''
 
 def extract_text(file_path, file_format):
     if file_format == 'docx':
@@ -133,6 +90,7 @@ def summarizenow(request):
     if request.method == 'POST':
         try:
             file = request.FILES['file']
+
             if file.name.endswith('.pdf'):
                 input_text = extract_text(file, file.name.split('.')[-1])
             elif file.name.endswith('.docx'):
