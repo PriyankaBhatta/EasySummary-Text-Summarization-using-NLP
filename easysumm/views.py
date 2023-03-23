@@ -20,6 +20,9 @@ import nltk
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import sent_tokenize
+from builtins import PendingDeprecationWarning
+
+
 
 nltk.download('stopwords')
 stop_words = stopwords.words('english')
