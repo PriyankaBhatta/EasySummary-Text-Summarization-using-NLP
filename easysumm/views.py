@@ -47,6 +47,8 @@ def summarize(input_text, summary_length):
     return ' '.join(summary)
 
 #this function will only extract <p> tags from URL's
+
+
 def get_paragraphs(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -58,8 +60,8 @@ def get_paragraphs(url):
         clean_paragraphs.append(clean_text)
     return '\n'.join(clean_paragraphs)
 
-#this function is used to extract text from files 
 
+#this function is used to extract text from files 
 def extract_text(file_path, file_format, summary_length):
     if file_format == 'docx':
         doc = docx.Document(file_path)
@@ -140,14 +142,13 @@ def extract_text(file_path, file_format, summary_length):
 
 
 
-#this function carries out the summary using 
-# summarizenow tag in html.
+#this function carries out the summary using summarizenow tag in html.
 def summarizenow(request):
     output_text = ''
     error_message = ''
     input_text = ''
     summary = ''
-    current_summary_length = 'small'
+   
     
     if request.method == 'POST':
         try:
@@ -155,13 +156,15 @@ def summarizenow(request):
 
             if file.name.endswith('.pdf'):
                 input_text = extract_text(file, file.name.split('.')[-1], request.POST.get('summary_length', 'short'))
-                current_summary_length = request.POST.get('summary_length', 'small')
+                
             elif file.name.endswith('.docx'):
                 input_text = extract_text(file, file.name.split('.')[-1], request.POST.get('summary_length', 'short'))
-                current_summary_length = request.POST.get('summary_length','small')
+                
 
             if len(input_text.strip()) > 0:
                 summary_length = request.POST.get('summary_length', 'small')
+                
+
                 if summary_length == 'small':
                     summary_length = 5
                 elif summary_length == 'medium':
@@ -171,7 +174,7 @@ def summarizenow(request):
 
                 summary = summarize(input_text, summary_length)
                 output_text = summary
-                current_summary_length = summary_length
+                
                 
             else:
                 error_message = 'The file could not be processed. Please upload a valid file.'
@@ -186,6 +189,8 @@ def summarizenow(request):
 
             if len(input_text.strip()) > 0:
                 summary_length = request.POST.get('summary_length','small')
+                
+
                 if summary_length == 'small':
                     summary_length = 5
                 elif summary_length == 'medium':
@@ -195,7 +200,7 @@ def summarizenow(request):
 
                 summary = summarize(input_text, summary_length)
                 output_text = summary
-                current_summary_length = summary_length
+               
 
             else:
                 error_message = 'Please enter some text or provide a valid URL.'
@@ -204,5 +209,5 @@ def summarizenow(request):
                                         'error_message': error_message,
                                         'input_text': input_text,
                                         'summary': summary,
-                                        'current_summary_length': current_summary_length})
+                                        })
 

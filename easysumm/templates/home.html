@@ -264,10 +264,6 @@
         <form method="post" action="{% url 'summarizenow' %}" enctype="multipart/form-data"> 
             {% csrf_token %}
 
-            <!--this is the hidden input field for current summary length-->
-            <input type="hidden" name="current_summary_length" id="current_summary_length" value="{{ summary_length }}">
-            <br>
-            
             <!--for uploading a file, for example "Upload Document/PDF"-->
             <input type="file" name="file" id="fileInput" class="box" required>
             <br>
@@ -286,6 +282,10 @@
                 <option value="medium" id="medium-option">Medium</option>
                 <option value="large" id="large-option" >Large</option>
             </select>
+
+            <!--this is the hidden input field to store current summary length-->
+            <input type="hidden" name="current_summary_length" id="current_summary_length" value="{{ summary_length }}">
+            <br>
 
             <br>
             <!--summarize button to show output-->
@@ -465,6 +465,7 @@
        else if (currentSummaryLength == 'large'){
         document.getElementById('large-option').selected = true;
        }
+
 
 
     </script> 
