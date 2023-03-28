@@ -263,6 +263,10 @@
     
         <form method="post" action="{% url 'summarizenow' %}" enctype="multipart/form-data"> 
             {% csrf_token %}
+
+            <!--this is the hidden input field for current summary length-->
+            <input type="hidden" name="current_summary_length" id="current_summary_length" value="{{ summary_length }}">
+            <br>
             
             <!--for uploading a file, for example "Upload Document/PDF"-->
             <input type="file" name="file" id="fileInput" class="box" required>
@@ -278,9 +282,9 @@
             
             <p>Summary Length: </p>
             <select id="summary_length" name="summary_length">
-                <option value="small" {% if summary_length == 'small'%}selected{% endif %}>Small</option>
-                <option value="medium" {% if summary_length == 'medium'%}selected{% endif %}>Medium</option>
-                <option value="large" {% if summary_length == 'large'%}selected{% endif %}>Large</option>
+                <option value="small" id="small-option" >Small</option>
+                <option value="medium" id="medium-option">Medium</option>
+                <option value="large" id="large-option" >Large</option>
             </select>
 
             <br>
@@ -446,7 +450,21 @@
             document.forms[0].submit();
         }
           
-       
+       //for summary_length sleected value to be displayed on screen
+
+       //get the current summary length from the hidden input 
+       var currentSummaryLength = document.getElementById('current_summary_length').value;
+
+       //set the selected attribute of the corresponding option element
+       var summaryLengthDropdown = document.getElementById('summary_length');
+       if (currentSummaryLength == 'small'){
+        document.getElementById('small-option').selected = true;
+       } else if (currentSummaryLength === 'medium') {
+        document.getElementById('medium-option').selected = true;
+       }
+       else if (currentSummaryLength == 'large'){
+        document.getElementById('large-option').selected = true;
+       }
 
 
     </script> 
