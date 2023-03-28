@@ -278,9 +278,9 @@
             
             <p>Summary Length: </p>
             <select id="summary_length" name="summary_length">
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
+                <option value="small" {% if summary_length == 'small'%}selected{% endif %}>Small</option>
+                <option value="medium" {% if summary_length == 'medium'%}selected{% endif %}>Medium</option>
+                <option value="large" {% if summary_length == 'large'%}selected{% endif %}>Large</option>
             </select>
 
             <br>

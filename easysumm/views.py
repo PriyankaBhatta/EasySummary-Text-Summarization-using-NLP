@@ -59,6 +59,7 @@ def get_paragraphs(url):
     return '\n'.join(clean_paragraphs)
 
 #this function is used to extract text from files 
+
 def extract_text(file_path, file_format, summary_length):
     if file_format == 'docx':
         doc = docx.Document(file_path)
@@ -86,7 +87,9 @@ def extract_text(file_path, file_format, summary_length):
                     elif re.search(r'^Conclusion', para.text):
                         current_section = conclusion
                     else:
-                        current_section.append(para.text)
+                        # Exclude headings and figures numbers
+                        if not re.search(r'^\s*\d+\.\s', para.text) and not re.search(r'^\s*\d+\s', para.text):
+                            current_section.append(para.text)
         
         # Combine paragraphs from each section
         summary = []
@@ -124,6 +127,9 @@ def extract_text(file_path, file_format, summary_length):
             else:
                 summary = (abstract + intro + conclusion).split('\n\n')
             
+            # Exclude headings and figures numbers
+            summary = [para for para in summary if not re.search(r'^\s*\d+\.\s', para) and not re.search(r'^\s*\d+\s', para)]
+            
             # Join paragraphs into a single string
             return '\n\n'.join(summary)
         else:
@@ -131,6 +137,7 @@ def extract_text(file_path, file_format, summary_length):
     
     else:
         raise ValueError('Unsupported file format.')
+
 
 
 #this function carries out the summary using summarizenow tag in html.
