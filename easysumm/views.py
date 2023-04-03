@@ -47,8 +47,6 @@ def summarize(input_text, summary_length):
     return ' '.join(summary)
 
 #this function will only extract <p> tags from URL's
-
-
 def get_paragraphs(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -166,11 +164,11 @@ def summarizenow(request):
                 
 
                 if summary_length == 'small':
-                    summary_length = 5
-                elif summary_length == 'medium':
                     summary_length = 9
-                else:
+                elif summary_length == 'medium':
                     summary_length = 11
+                else:
+                    summary_length = 15
 
                 summary = summarize(input_text, summary_length)
                 output_text = summary
@@ -192,11 +190,11 @@ def summarizenow(request):
                 
 
                 if summary_length == 'small':
-                    summary_length = 5
-                elif summary_length == 'medium':
                     summary_length = 9
-                else:
+                elif summary_length == 'medium':
                     summary_length = 11
+                else:
+                    summary_length = 15
 
                 summary = summarize(input_text, summary_length)
                 output_text = summary
