@@ -146,7 +146,7 @@ def summarizenow(request):
     error_message = ''
     input_text = ''
     summary = ''
-   
+    
     
     if request.method == 'POST':
         try:
@@ -175,8 +175,8 @@ def summarizenow(request):
                 
                 
             else:
-                error_message = 'The file could not be processed. Please upload a valid file.'
-
+                #error_message = 'The file could not be processed. Please upload a valid file.'
+                output_text = 'The file could not be processed. Please upload a valid file.'
                 
         except:
             try:
@@ -201,10 +201,11 @@ def summarizenow(request):
                
 
             else:
-                error_message = 'Please enter some text or provide a valid URL.'
+                #error_message = 'Please enter some text or provide a valid URL.'
+                output_text = 'The file or URL doesnt has valid text to be summarized.'
 
     return render(request, 'home.html', {'output_text': output_text,
-                                        'error_message': error_message,
+                                        #'error_message': error_message,
                                         'input_text': input_text,
                                         'summary': summary,
                                         })

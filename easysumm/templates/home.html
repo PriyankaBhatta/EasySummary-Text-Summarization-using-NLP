@@ -296,17 +296,26 @@
         </form>
     
         <form>
-            <br> 
+            <br>
+            <textarea name = "text" placeholder="Your summary will appear here." class="box" id="" cols="30" rows="10">{{ output_text }}</textarea>
+        </form>
+        
+        <!--
+        <form>
+            <br>  -->
         <!--this is the textarea which shows output summary.-->
+        <!--
         {% if output_text %}
         <textarea placeholder="" class="box" id="" cols="30"
-         rows="10" name="output" readonly>{{ output_text }}</textarea>
+         rows="10" name="output">{{ output_text }}</textarea>
         {% endif %}
 
         {% if error_message %}
         <div id="error-message">{{ error_message }}</div>
         {% endif %}
+
         </form> 
+    -->
 
     </section> 
 
