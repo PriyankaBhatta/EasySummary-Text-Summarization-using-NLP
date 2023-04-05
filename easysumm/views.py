@@ -143,7 +143,7 @@ def extract_text(file_path, file_format, summary_length):
 #this function carries out the summary using summarizenow tag in html.
 def summarizenow(request):
     output_text = ''
-    error_message = ''
+    #error_message = ''
     input_text = ''
     summary = ''
     
