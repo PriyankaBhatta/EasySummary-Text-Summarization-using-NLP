@@ -10,16 +10,16 @@ import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup
 import PyPDF2
-from PyPDF2 import PdfFileReader
-from PyPDF2 import PdfFileReader
-import docx
-import io
 import docx2txt
+import docx
 import re
 import nltk
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import sent_tokenize
+from sklearn.metrics.pairwise import cosine_similarity
+from summa.summarizer import summarize
+from collections import defaultdict
 from builtins import PendingDeprecationWarning
 
 
@@ -59,6 +59,7 @@ def get_paragraphs(url):
     return '\n'.join(clean_paragraphs)
 
 
+'''
 #this function is used to extract text from files 
 def extract_text(file_path, file_format, summary_length):
     if file_format == 'docx':
@@ -137,13 +138,72 @@ def extract_text(file_path, file_format, summary_length):
     
     else:
         raise ValueError('Unsupported file format.')
+'''
+def preprocess(text):
+    # Tokenize into sentences
+    sentences = sent_tokenize(text)
+    
+    # Lowercase each sentence and remove leading/trailing white space
+    sentences = [sentence.lower().strip() for sentence in sentences]
+    
+    # Remove stop words
+    stop_words = set(stopwords.words('english'))
+    sentences = [' '.join([word for word in sentence.split() if word not in stop_words]) for sentence in sentences]
+    
+    return sentences
 
 
+def textrank(sentences, n):
+    # Create a graph where the nodes are sentences
+    graph = defaultdict(list)
+    for i, sentence_i in enumerate(sentences):
+        for j, sentence_j in enumerate(sentences):
+            if i != j:
+                similarity = cosine_similarity(tfidf_vectors[i], tfidf_vectors[j])[0][0]
+                graph[sentence_i].append((sentence_j, similarity))
+    
+    # Perform PageRank to get the top sentences
+    scores = defaultdict(float)
+    for _ in range(n):
+        for sentence in sentences:
+            score = 0
+            for incoming, incoming_weight in graph[sentence]:
+                score += incoming_weight * scores[incoming]
+            scores[sentence] = 0.15 + 0.85 * score
+            
+    # Return the top sentences
+    top_sentences = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:n]
+    top_sentences = [sentence[0] for sentence in top_sentences]
+    top_sentences = sorted(top_sentences, key=lambda x: sentences.index(x))
+    
+    # Return the summary
+    summary = '\n'.join(top_sentences)
+    return summary
+
+
+def summarize_file(file, file_extension, summary_length):
+    if file_extension == 'pdf':
+        with open(file, 'rb') as f:
+            pdf_reader = PyPDF2.PdfFileReader(f)
+            text = ''
+            for i in range(pdf_reader.getNumPages()):
+                text += pdf_reader.getPage(i).extractText()
+    elif file_extension == 'docx':
+        text = docx2txt.process(file)
+    else:
+        return 'Invalid file type. Only .pdf and .docx files are supported.'
+    
+    sentences = preprocess(text)
+    tfidf = TfidfVectorizer().fit_transform(sentences)
+    global tfidf_vectors
+    tfidf_vectors = np.asarray(tfidf.todense())
+    
+    summary = textrank(sentences, summary_length)
+    return summary
 
 #this function carries out the summary using summarizenow tag in html.
 def summarizenow(request):
     output_text = ''
-    #error_message = ''
     input_text = ''
     summary = ''
     
@@ -151,18 +211,10 @@ def summarizenow(request):
     if request.method == 'POST':
         try:
             file = request.FILES['file']
-
-            if file.name.endswith('.pdf'):
-                input_text = extract_text(file, file.name.split('.')[-1], request.POST.get('summary_length', 'short'))
-                
-            elif file.name.endswith('.docx'):
-                input_text = extract_text(file, file.name.split('.')[-1], request.POST.get('summary_length', 'short'))
-                
-
-            if len(input_text.strip()) > 0:
-                summary_length = request.POST.get('summary_length', 'small')
-                
-
+            file_extension = file.name.plit('.')[-1]
+            if file_extension in ['pdf','docx']:
+                summary_length = request.POST.get('summary_length', 'short')
+            
                 if summary_length == 'small':
                     summary_length = 9
                 elif summary_length == 'medium':
@@ -170,12 +222,11 @@ def summarizenow(request):
                 else:
                     summary_length = 15
 
-                summary = summarize(input_text, summary_length)
+                summary = summarize_file(file, file_extension, summary_length)
                 output_text = summary
                 
-                
             else:
-                #error_message = 'The file could not be processed. Please upload a valid file.'
+                
                 output_text = 'The file could not be processed. Please upload a valid file.'
                 
         except:
@@ -201,11 +252,10 @@ def summarizenow(request):
                
 
             else:
-                #error_message = 'Please enter some text or provide a valid URL.'
+                
                 output_text = 'The file or URL doesnt has valid text to be summarized.'
 
     return render(request, 'home.html', {'output_text': output_text,
-                                        #'error_message': error_message,
                                         'input_text': input_text,
                                         'summary': summary,
                                         })
