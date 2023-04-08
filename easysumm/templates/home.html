@@ -21,9 +21,6 @@
     <!--<link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">-->
     <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
 
-
-      
-
 </head>
 <body>
     
@@ -288,7 +285,6 @@
                 <option value="medium" id="medium-option">Medium</option>
                 <option value="large" id="large-option" >Large</option>
             </select>
-            
 
             <br>
             <!--summarize button to show output-->
@@ -301,23 +297,7 @@
             <br>
             <textarea name = "text" placeholder="Your summary will appear here." class="box" id="" cols="30" rows="10">{{ output_text }}</textarea>
         </form>
-        
-        <!--
-        <form>
-            <br>  -->
-        <!--this is the textarea which shows output summary.-->
-        <!--
-        {% if output_text %}
-        <textarea placeholder="" class="box" id="" cols="30"
-         rows="10" name="output">{{ output_text }}</textarea>
-        {% endif %}
-
-        {% if error_message %}
-        <div id="error-message">{{ error_message }}</div>
-        {% endif %}
-
-        </form> 
-    -->
+    
 
     </section> 
 
@@ -463,10 +443,7 @@
             document.forms[0].submit();
         }
           
-        
-        
-
-
+    
 
     </script> 
     

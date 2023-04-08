@@ -155,6 +155,8 @@ def summarizenow(request):
         else:
             output_text = 'The file or URL doesnt have valid text to be summarized.'
 
+    else:
+        return redirect('home.html') #redirect to home page if not a POST equest
 
     return render(request, 'home.html', {'output_text': output_text,
                                         'input_text': input_text,
