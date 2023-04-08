@@ -16,11 +16,9 @@ import nltk
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import sent_tokenize
-from sklearn.metrics.pairwise import cosine_similarity
-#from builtins import PendingDeprecationWarning
-
 nltk.download('stopwords')
 stop_words = stopwords.words('english')
+
 
 def home(request):
     return render(request, "home.html")
@@ -162,3 +160,6 @@ def summarizenow(request):
                                         'input_text': input_text,
                                         'summary': summary,
                                         })
+
+
+    
