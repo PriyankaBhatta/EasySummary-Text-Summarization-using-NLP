@@ -127,8 +127,7 @@ def summarizenow(request):
 
     return render(request, 'home.html', {'output_text':output_text,
                                          'input_text': input_text, 
-                                         'summary':summary,
-                                         'file': file,
+                                         'summary':summary,   
                                          })
 
 
