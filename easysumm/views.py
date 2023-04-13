@@ -54,25 +54,6 @@ def get_paragraphs(url):
 
 
 
-#this function is used to extract text from files 
-def summarize_file(file):
-    file_type = file.name.split('.')[-1]
-    if file_type == 'pdf':
-        pdf_reader = PyPDF2.PdfFileReader(file)
-        input_text = ' '
-        for page_num in range(pdf_reader.getNumPages()):
-            page = pdf_reader.getPage(page_num)
-            input_text += page.extractText()
-    elif file_type == 'docx':
-        input_text = docx2txt.process(file)
-    else:
-        return ['Invaid file format.']
-    
-    summary = summarize(input_text, summary_length=9)
-    summary_paragraphs = summary.split('\n')
-    return summary_paragraphs
-    #return '\n'.join(input_text)
-
 
 def summarizenow(request):
     output_text = ''
@@ -82,14 +63,26 @@ def summarizenow(request):
     if request.method == 'POST':
         try:
             file = request.FILES['file']
-            input_text = summarize_file(file)
-            summary_length = request.POST.get('summary_length','small')
+            file_type = file.name.split('.')[-1]
+            if file_type == 'pdf':
+                pdf_reader = PyPDF2.PdfFileReader(file)
+                input_text = ''
+                for page_num in range(pdf_reader.getNumPages()):
+                    page = pdf_reader.getPage(page_num)
+                    input_text += page.extractText()
+            elif file_type == 'docx':
+                input_text += page.extractText()
+            else:
+                raise Exception('Invalid file type.Upload pdf or docx files only.')
+            
+            summary_length = request.POST.get('summary_length', 'small')
             if summary_length == 'small':
                 summary_length = 9
             elif summary_length == 'medium':
                 summary_length = 15
             else:
                 summary_length = 19
+
             summary = summarize(input_text, summary_length)
             output_text = summary
 
@@ -120,8 +113,8 @@ def summarizenow(request):
                     summary = summarize(input_text, summary_length)
                     output_text = summary
 
-    else:
-        output_text = 'The file or URL doesnt have valid text to be summarized.'
+                else:
+                    output_text = 'The file or URL doesnt have valid text to be summarized.'
 
     return render(request, 'home.html', {'output_text':output_text,
                                          'input_text': input_text, 
