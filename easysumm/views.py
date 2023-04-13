@@ -66,10 +66,12 @@ def summarize_file(file):
     elif file_type == 'docx':
         input_text = docx2txt.process(file)
     else:
-        return 'Invalid file format. Only PDF and DOCX files are supported.'
+        return ['Invaid file format.']
     
-    summary = summarize(input_text, summary_length = 9) #summarize the extracted text
-    return summary
+    summary = summarize(input_text, summary_length=9)
+    summary_paragraphs = summary.split('\n')
+    return summary_paragraphs
+    #return '\n'.join(input_text)
 
 
 def summarizenow(request):
@@ -90,6 +92,7 @@ def summarizenow(request):
                 summary_length = 19
             summary = summarize(input_text, summary_length)
             output_text = summary
+
         except:
             try:
                 url = request.POST['urlInput']
@@ -117,8 +120,8 @@ def summarizenow(request):
                     summary = summarize(input_text, summary_length)
                     output_text = summary
 
-                else:
-                    output_text = 'The file or URL doesnt have valid text to be summarized.'
+    else:
+        output_text = 'The file or URL doesnt have valid text to be summarized.'
 
     return render(request, 'home.html', {'output_text':output_text,
                                          'input_text': input_text, 
