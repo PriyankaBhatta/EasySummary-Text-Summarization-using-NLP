@@ -20,6 +20,7 @@ nltk.download('stopwords')
 stop_words = stopwords.words('english')
 
 
+
 def home(request):
     return render(request, "home.html")
 
@@ -52,29 +53,37 @@ def get_paragraphs(url):
         clean_paragraphs.append(clean_text)
     return '\n'.join(clean_paragraphs)
 
+def extract_file_text(file):
+    file_type = file.name.split('.')[-1]
+    if file_type == 'pdf':
+        pdf_reader = PyPDF2.PdfFileReader(file)
+        input_text = ''
+        for page_num in range(pdf_reader.getNumPages()):
+            page = pdf_reader.getPage(page_num)
+            input_text += page.extractText()
+    elif file_type == 'docx':
+        input_text = docx2txt.process(file)
+    else:
+        raise Exception('Invalid file type. Upload pdf or docx files only.')
 
+    if not input_text or len(input_text.strip()) == 0:
+        raise Exception('The file does not contain valid text to be summarized.')
 
+    paragraphs = input_text.split('\n\n')
+    clean_paragraphs = [p.strip() for p in paragraphs if len(p.strip()) > 0]
+
+    return '\n'.join(clean_paragraphs)
 
 def summarizenow(request):
     output_text = ''
     input_text = ''
     summary = ''
     
+    
     if request.method == 'POST':
         try:
             file = request.FILES['file']
-            file_type = file.name.split('.')[-1]
-            if file_type == 'pdf':
-                pdf_reader = PyPDF2.PdfFileReader(file)
-                input_text = ''
-                for page_num in range(pdf_reader.getNumPages()):
-                    page = pdf_reader.getPage(page_num)
-                    input_text += page.extractText()
-            elif file_type == 'docx':
-                input_text += page.extractText()
-            else:
-                raise Exception('Invalid file type.Upload pdf or docx files only.')
-            
+            input_text = extract_file_text(file)
             summary_length = request.POST.get('summary_length', 'small')
             if summary_length == 'small':
                 summary_length = 9
@@ -99,7 +108,7 @@ def summarizenow(request):
                     summary_length = 19
                 summary = summarize(input_text, summary_length)
                 output_text = summary
-                
+     
             except:
                 input_text = request.POST['text']
                 if len(input_text.strip()) >0:
@@ -119,6 +128,7 @@ def summarizenow(request):
     return render(request, 'home.html', {'output_text':output_text,
                                          'input_text': input_text, 
                                          'summary':summary,
+                                         'file': file,
                                          })
 
 
