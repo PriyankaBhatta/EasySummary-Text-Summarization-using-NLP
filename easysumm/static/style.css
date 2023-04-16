@@ -18,7 +18,7 @@
     text-transform: capitalize;
     transition: all .2s linear;
 }
-/*home section*/
+/*header section*/
 header .logo{
     color: var(--main-color);
     font-size: 2.3rem;
@@ -75,6 +75,8 @@ html{
     cursor: pointer;
     display: none;
 }
+
+/*home section*/
 section{
     padding: 2rem 9%;
 }

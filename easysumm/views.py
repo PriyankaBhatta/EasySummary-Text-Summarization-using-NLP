@@ -53,9 +53,6 @@ def get_paragraphs(url):
         clean_paragraphs.append(clean_text)
     return '\n'.join(clean_paragraphs)
 
-def clean_summary(summary):
-    clean_summary = re.sub(r'^[\d\w].*\n?', '', summary, flags=re.MULTILINE)
-    return clean_summary
 
 def extract_file_text(file):
     file_type = file.name.split('.')[-1]
