@@ -12,6 +12,10 @@ import nltk                                                 #Natural Language To
 from nltk.corpus import stopwords                           #a list of common words (like "the", "and", etc.) that are often removed from text during text analysis.
 from sklearn.feature_extraction.text import TfidfVectorizer #a class used for converting text data into a numerical matrix using the TF-IDF algorithm.
 from nltk.tokenize import sent_tokenize                     #a function from nltk used for tokenizing text into individual sentences.
+from sklearn.decomposition import TruncatedSVD
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import Normalizer
+from lexrank import LexRank
 nltk.download('stopwords')
 stop_words = stopwords.words('english')
 
@@ -50,6 +54,70 @@ def summarize(input_text, summary_length):    #takes two argument input_text and
     #returns the summarized text as a string
     return ' '.join(summary) 
                                                                                     
+#this is the function that perform lsa for text summary
+def summarize_lsa(input_text, summary_length):
+    #remove numbers like [17], [71], etc from the input string
+    input_text = re.sub(r'\[\d+\]', '', input_text)
+    # tokenize the input_text string into a list of sentences
+    sentences = sent_tokenize(input_text)
+    # initializes a TfidfVectorizer object with a list of stop words to be removed
+    vectorizer = TfidfVectorizer(stop_words='english')
+    # fits the vectorizer to the tokenized sentences and transforms it into a document-term matrix X
+    X = vectorizer.fit_transform(sentences)
+    # initializes an SVD object with the desired number of components
+    svd = TruncatedSVD(n_components=100)
+    # normalizes the output of the SVD
+    normalizer = Normalizer(copy=False)
+    lsa = make_pipeline(svd, normalizer)
+    # applies LSA to the document-term matrix X
+    X = lsa.fit_transform(X)
+    # calculates the sum of each row in X (which represents the sum of LSA scores for each sentence)
+    scores = X.sum(axis=1)
+    # normalizes the scores by dividing each by the maximum score
+    scores = scores / scores.max(axis=0)
+    # initializes an empty list to store the sentence indices along with their scores
+    ranked_sentences = []
+    # iterates over the scores and their indices
+    for i, score in enumerate(scores):
+        # appends the score and index as a tuple to the ranked_sentences list
+        ranked_sentences.append((score, i))
+    # sorts the ranked_sentences list in descending order based on the score
+    ranked_sentences.sort(reverse=True)
+    # extracts the indices of the top summary_length sentences
+    top_sentence_indices = [ranked_sentences[i][1] for i in range(summary_length)]
+    # sorts the sentence indices in ascending order
+    top_sentence_indices.sort()
+    # extracts the sentences corresponding to the top sentence indices and stores them in the summary list
+    summary = [sentences[i] for i in top_sentence_indices]
+    # returns the summarized text as a string
+    return ' '.join(summary)
+
+#this is the function that perform lexrank for text summary
+def summarize_lexrank(input_text, summary_length):
+    # remove numbers like [17], [71], etc from the input_text string
+    input_text = re.sub(r'\[\d+\]', '', input_text)
+    # tokenize the input_text string into a list of sentences
+    sentences = sent_tokenize(input_text)
+    # initializes a LexRank object
+    lexrank = LexRank(sentences)
+    # calculates the scores of each sentence using the LexRank algorithm
+    scores = lexrank.rank_sentences(sentences)
+    # initializes an empty list to store the sentence indices along with their scores
+    ranked_sentences = []
+    # iterates over the scores and their indices
+    for i, score in enumerate(scores):
+        # appends the score and index as a tuple to the ranked_sentences list
+        ranked_sentences.append((score, i))
+    # sorts the ranked_sentences list in descending order based on score
+    ranked_sentences.sort(reverse=True)
+    # extracts the indices of the top summary_length sentences
+    top_sentence_indices = [ranked_sentences[i][1] for i in range(summary_length)]
+    # sorts the sentence indices in ascending order
+    top_sentence_indices.sort()
+    # extracts the sentences corresponding to the top sentence indices and stores them in the summary list
+    summary = [sentences[i] for i in top_sentence_indices]
+    # returns the summarized text as a string
+    return ' '.join(summary)
 
 # THIS FUNCTION WILL ONLY EXTRACT <p> TAGS FROM URL CONTENT
 def get_paragraphs(url):
@@ -123,14 +191,17 @@ def summarizenow(request):
             summary_length = request.POST.get('summary_length', 'small')
             #set summary length according to user selection
             if summary_length == 'small':
+                summarization_algorithm = summarize_lexrank
                 summary_length = 9
             elif summary_length == 'medium':
+                summarization_algorithm = summarize_lsa
                 summary_length = 15
             else:
+                summarization_algorithm = summarize
                 summary_length = 19
             
             #generate summary of the extracted text
-            summary = summarize(input_text, summary_length)
+            summary = summarization_algorithm(input_text, summary_length)
             #set the output text to the summary
             output_text = summary
 
@@ -144,13 +215,16 @@ def summarizenow(request):
                 summary_length = request.POST.get('summary_length','small')
                 #user can adjust the summary length according to their needs
                 if summary_length == 'small':
+                    summarization_algorithm = summarize_lexrank
                     summary_length = 9
                 elif summary_length == 'medium':
+                    summarization_algorithm = summarize_lsa
                     summary_length = 15
                 else:
+                    summarization_algorithm = summarize
                     summary_length = 19
                 #generate summary of extracted paragraphs
-                summary = summarize(input_text, summary_length)
+                summary = summarization_algorithm(input_text, summary_length)
                 #set the output text to the summary
                 output_text = summary
      
@@ -163,14 +237,17 @@ def summarizenow(request):
                     summary_length = request.POST.get('summary_length', 'small')
                     #user can select the desired summary length
                     if summary_length == 'small':
+                        summarization_algorithm = summarize_lexrank
                         summary_length = 9
                     elif summary_length == 'medium':
+                        summarization_algorithm = summarize_lsa
                         summary_length = 15
                     else:
+                        summarization_algorithm = summarize
                         summary_length = 19
                     
                     #generate summary of the extracted text
-                    summary = summarize(input_text, summary_length)
+                    summary = summarization_algorithm(input_text, summary_length)
                     #set the output text to summary
                     output_text = summary
 

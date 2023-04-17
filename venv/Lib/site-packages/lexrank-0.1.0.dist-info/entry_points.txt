@@ -1,0 +1,3 @@
+[console_scripts]
+lexrank_assemble_stopwords = lexrank.tools.assemble_stopwords:entrypoint
+

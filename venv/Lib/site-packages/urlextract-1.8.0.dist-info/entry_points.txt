@@ -1,0 +1,2 @@
+[console_scripts]
+urlextract = urlextract:_urlextract_cli
