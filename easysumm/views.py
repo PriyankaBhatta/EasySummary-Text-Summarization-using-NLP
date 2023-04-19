@@ -140,7 +140,7 @@ def get_paragraphs(url):
     # join the cleaned paragraphs into a single string separated by newlines
     return '\n'.join(clean_paragraphs)            
 
-'''
+
 def extract_file_text(file):
     #extract file extension
     file_type = file.name.split('.')[-1]
@@ -172,60 +172,6 @@ def extract_file_text(file):
 
 
     return '\n'.join(clean_paragraphs) # join the cleaned paragraphs with newlines and return as a single string
-'''
-
-def extract_file_text(file):
-    # regular expressions to match table of contents, table of figures, headings, cover page, footer/header and page numbers
-    toc_regex = r'Table of Contents'
-    tof_regex = r'Table of Figures'
-    heading_regex = r'^\d+\..+$'  # matches headings like '1. Introduction' or '2. Background'
-    cover_regex = r'^(\w+\s?)+$'  # matches a single line of text with only letters and spaces (assumes cover page contains no paragraphs)
-    footer_header_regex = r'^(\s*\d+)+\s*$'  # matches lines containing only whitespace and numbers (assumes footer/header/page numbers use the same format)
-    
-    #extract file extension
-    file_type = file.name.split('.')[-1]
-    #check if the file is a pdf
-    if file_type == 'pdf':
-        #read the pdf file
-        pdf_reader = PyPDF2.PdfFileReader(file)
-        #initialized variable to store extracted text
-        input_text = ''
-        # loop through each page in the pdf
-        for page_num in range(pdf_reader.getNumPages()):
-            page = pdf_reader.getPage(page_num)
-            # extract text from the current page and append to input_text
-            page_text = page.extractText()
-            # exclude table of contents, table of figures, headings, cover page, and footer/header and page numbers
-            if re.search(toc_regex, page_text, re.IGNORECASE) or \
-                re.search(tof_regex, page_text, re.IGNORECASE) or \
-                re.search(heading_regex, page_text) or \
-                re.search(cover_regex, page_text) or \
-                re.search(footer_header_regex, page_text):
-                continue
-            input_text += page_text
-    # check if the file is a docx 
-    elif file_type == 'docx':
-        # extract text from the docx file
-        input_text = docx2txt.process(file)
-        # exclude table of contents, table of figures, headings, cover page, and footer/header and page numbers
-        input_text = re.sub(toc_regex, '', input_text, flags=re.IGNORECASE)
-        input_text = re.sub(tof_regex, '', input_text, flags=re.IGNORECASE)
-        input_text = re.sub(heading_regex, '', input_text)
-        input_text = re.sub(cover_regex, '', input_text)
-        input_text = re.sub(footer_header_regex, '', input_text)
-    else:
-        raise Exception('Invalid file type. Upload pdf or docx files only.')  # raise an exception if the file type is not pdf or docx
-
-    if not input_text or len(input_text.strip()) == 0:
-        raise Exception('The file does not contain valid text to be summarized.') # raise an exception if the extracted text is empty or contains only whitespace
-
-    # split the text into paragraphs
-    paragraphs = input_text.split('\n\n')
-    # remove leading/trailing whitespace from each paragraph and exclude empty paragraphs
-    clean_paragraphs = [p.strip() for p in paragraphs if len(p.strip()) > 0]
-
-    return '\n'.join(clean_paragraphs) # join the cleaned paragraphs with newlines and return as a single string
-
 
 
 def summarizenow(request):
