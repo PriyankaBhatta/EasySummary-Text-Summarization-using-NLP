@@ -26,7 +26,7 @@ def home(request):
 #this is the tf-idf function
 def summarize(input_text, summary_length):    #takes two argument input_text and summary_length
     #remove numbers like [17], [71], etc from the input_text string
-    input_text = re.sub(r'\[\d+\]', '', input_text)                                 
+    input_text = re.sub(r'\[\d+\]|\[.*?\]', '', input_text)                                 
     #tokenizes the input_text string into a list of sentences
     sentences = sent_tokenize(input_text)                                           
     #initializes a TfidfVectorizer object with a list of stop words to be removed
@@ -57,7 +57,7 @@ def summarize(input_text, summary_length):    #takes two argument input_text and
 #this is the function that perform lsa for text summary
 def summarize_lsa(input_text, summary_length):
     #remove numbers like [17], [71], etc from the input string
-    input_text = re.sub(r'\[\d+\]', '', input_text)
+    input_text = re.sub(r'\[\d+\]|\[.*?\]', '', input_text)
     # tokenize the input_text string into a list of sentences
     sentences = sent_tokenize(input_text)
     # initializes a TfidfVectorizer object with a list of stop words to be removed
@@ -95,7 +95,7 @@ def summarize_lsa(input_text, summary_length):
 #this is the function that perform lexrank for text summary
 def summarize_lexrank(input_text, summary_length):
     # remove numbers like [17], [71], etc from the input_text string
-    input_text = re.sub(r'\[\d+\]', '', input_text)
+    input_text = re.sub(r'\[\d+\]|\[.*?\]', '', input_text)
     # tokenize the input_text string into a list of sentences
     sentences = sent_tokenize(input_text)
     # initializes a LexRank object
