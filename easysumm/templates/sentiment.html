@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+{%load static%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EasySummary</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- custom css file link  -->
+    <link rel="stylesheet" href='{% static 'style.css' %}'>
+
+    <link rel="shortcut icon" href="{% static 'img/favicon1.ico' %}" type="image/x-icon">
+
+</head>
+<body>
+    
+    <!--header section starts here-->
+    <header class="header">
+
+        <div id="menu-btn" class="fas fa-bars"></div>
+        
+        <a href="#" class="logo"> EasySummary<i class="fas fa-file"></i></a>
+        
+        <nav class="navbar">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#users">Users</a>
+            <a href="#review">Reviews</a>
+        </nav>
+        
+        <a href="{% url 'home' %}" class="btn">Summarize now</a>
+
+    </header>
+
+    <!--sentiment analysis section starts here-->
+<div id='bg' style="background-image:url('{% static 'img/bg.jpg'%}');">
+
+<section class="sentiment" id="sentiment">
+    <h1 class="heading"> Sentiment <span>Analysis</span></h1>
+
+    <form method="post" action="{% url 'sentiment' %}" enctype="multipart/form-data"> 
+        {% csrf_token %}
+        
+        <!--for input textarea-->
+        <textarea name="text" placeholder="Enter text here to perform sentiment analysis." 
+        class="box" id="" cols="30" rows="10" required>{{ input_text }}</textarea>      
+        <br>
+        
+        <!--sentiment analysis button to show output-->
+        <button id="sentiment-button" class="btn" onclick="submitForm()">Perform Sentiment Analysis</button>
+
+    </form>
+
+    <!--this is the textarea which shows output sentiment analysis.-->
+    <form>
+        <br>
+        <textarea name="text" placeholder="Your sentiment analysis will appear here." class="box" id="" cols="30" rows="10" required>{{ output_text }}</textarea>
+    </form>
+    <br>
+    
+</section> 
+
+</div>
+<!--sentiment analysis section ends here-->
+
+<!-- footer section starts  -->
+
+<section class="footer">
+
+    <div class="box-container">
+
+        <div class="box">
+            <h3>Quick Links</h3>
+            <a href="#home"> <i class="fas fa-arrow-right"></i> Home </a>
+            <a href="#about"> <i class="fas fa-arrow-right"></i> About </a>
+            <a href="#users"> <i class="fas fa-arrow-right"></i> Users </a>
+            <a href="#review"> <i class="fas fa-arrow-right"></i> Reviews </a>
+            <a href="#summarizenow"> <i class="fas fa-arrow-right"></i> Summarize </a>
+        </div>
+
+        <div class="box">
+            <h3>Contact Info</h3>
+            <a href="#"> <i class="fas fa-phone"></i> +977-9802301065 </a>
+            <a href="#"> <i class="fas fa-phone"></i> +977-9818431625 </a>
+            <a href="#"> <i class="fas fa-envelope"></i> priyankabhatta2323@gmail.com </a>
+        </div>
+
+        <div class="box">
+            <h3>Social Media Links</h3>
+            <a href="https://www.facebook.com/priyankaa.bhatta56" target="_blank"> <i class="fab fa-facebook-f"></i> Facebook </a>
+            <a href="https://github.com/PriyankaBhatta" target="_blank"> <i class="fab fa-github"></i> Github </a>
+            <a href="https://www.linkedin.com/in/priyanka-bhatta/" target="_blank"> <i class="fab fa-linkedin"></i> Linkedin </a>
+        </div>
+
+    </div>
+
+    <div class="credit"> Created by <span>Ms. Priyanka Bhatta </span> | All Rights Reserved </div>
+
+</section>
+
+<!-- footer section ends -->
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 
 #Made by: Priyanka Bhatta
 #This code is a Python script for a web application.  
-
+from textblob import TextBlob
 from django.shortcuts import render                         #render a Django template with context data and return an HttpResponse object with the resulting HTML content.
 import requests                                             #library used for making HTTP requests to web pages
 from bs4 import BeautifulSoup                               #library used for web scraping and parsing HTML/XML documents
@@ -18,6 +18,7 @@ from sklearn.preprocessing import Normalizer
 from lexrank import LexRank
 nltk.download('stopwords')
 stop_words = stopwords.words('english')
+
 
 #this function displays the home.html page 
 def home(request):
@@ -262,4 +263,21 @@ def summarizenow(request):
                                          })
 
 
-    
+#performs sentiment analysis    
+def sentiment(request):
+    if request.method == 'POST':
+        text = request.POST['text']
+        blob = TextBlob(text)
+        sentiment_score = blob.sentiment.polarity
+
+        if sentiment_score > 0:
+            sentiment = 'Positive'
+        elif sentiment_score < 0:
+            sentiment = 'Negative'
+        else:
+            sentiment = 'Neutral'
+
+        context = {'sentiment': sentiment, 'score': sentiment_score, 'input_text': text}
+        return render(request, 'sentiment.html', context)
+    else:
+        return render(request, 'sentiment.html')
