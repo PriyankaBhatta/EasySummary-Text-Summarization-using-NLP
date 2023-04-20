@@ -22,22 +22,24 @@
 
 </head>
 <body>
+
+    <section class="sentiment-home" id="sentiment-home">
+        <div class="row">
+            <div class="content">
+                <h3>It's just not Summary<br>It's <span>EasySummary</span></h3>
+                
+            </div>
+        </div>
+    </section>
     
     <!--header section starts here-->
     <header class="header">
 
         <div id="menu-btn" class="fas fa-bars"></div>
         
-        <a href="#" class="logo"> EasySummary<i class="fas fa-file"></i></a>
+        <a href="/home.html#home" class="logo"> EasySummary<i class="fas fa-file"></i></a>
         
-        <nav class="navbar">
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
-            <a href="#users">Users</a>
-            <a href="#review">Reviews</a>
-        </nav>
-        
-        <a href="{% url 'home' %}" class="btn">Summarize now</a>
+        <a href="{% url 'summarizenow' %}" class="btn">Summarize now</a>
 
     </header>
 
@@ -45,6 +47,7 @@
 <div id='bg' style="background-image:url('{% static 'img/bg.jpg'%}');">
 
 <section class="sentiment" id="sentiment">
+
     <h1 class="heading"> Sentiment <span>Analysis</span></h1>
 
     <form method="post" action="{% url 'sentiment' %}" enctype="multipart/form-data"> 
@@ -60,11 +63,20 @@
 
     </form>
 
-    <!--this is the textarea which shows output sentiment analysis.-->
+    {% if sentiment %}
+    <div class="output">
+        <h2>Output</h2>
+        <p>Your input text: {{ input_text }}</p>
+        <p>Sentiment: {{ sentiment }}</p>
+        <p>Sentiment score: {{ score }}</p>
+    </div>
+    {% endif %}
+
+    <!--this is the textarea which shows output sentiment analysis.
     <form>
         <br>
         <textarea name="text" placeholder="Your sentiment analysis will appear here." class="box" id="" cols="30" rows="10" required>{{ output_text }}</textarea>
-    </form>
+    </form>-->
     <br>
     
 </section> 
@@ -80,11 +92,11 @@
 
         <div class="box">
             <h3>Quick Links</h3>
-            <a href="#home"> <i class="fas fa-arrow-right"></i> Home </a>
-            <a href="#about"> <i class="fas fa-arrow-right"></i> About </a>
-            <a href="#users"> <i class="fas fa-arrow-right"></i> Users </a>
-            <a href="#review"> <i class="fas fa-arrow-right"></i> Reviews </a>
-            <a href="#summarizenow"> <i class="fas fa-arrow-right"></i> Summarize </a>
+            <a href="/home.html#home"> <i class="fas fa-arrow-right"></i> Home </a>
+            <a href="/home.html#about"> <i class="fas fa-arrow-right"></i> About </a>
+            <a href="/home.html#users"> <i class="fas fa-arrow-right"></i> Users </a>
+            <a href="/home.html#review"> <i class="fas fa-arrow-right"></i> Reviews </a>
+            <a href="/home.html#summarizenow"> <i class="fas fa-arrow-right"></i> Summarize </a>
         </div>
 
         <div class="box">

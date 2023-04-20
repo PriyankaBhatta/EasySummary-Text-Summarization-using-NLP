@@ -1,6 +1,7 @@
 
 #Made by: Priyanka Bhatta
 #This code is a Python script for a web application.  
+
 from textblob import TextBlob
 from django.shortcuts import render                         #render a Django template with context data and return an HttpResponse object with the resulting HTML content.
 import requests                                             #library used for making HTTP requests to web pages
@@ -263,7 +264,7 @@ def summarizenow(request):
                                          })
 
 
-#performs sentiment analysis    
+#performs sentiment    
 def sentiment(request):
     if request.method == 'POST':
         text = request.POST['text']
@@ -280,4 +281,5 @@ def sentiment(request):
         context = {'sentiment': sentiment, 'score': sentiment_score, 'input_text': text}
         return render(request, 'sentiment.html', context)
     else:
-        return render(request, 'sentiment.html')
+        context = {'output_text': ''}
+        return render(request, 'sentiment.html', context)
