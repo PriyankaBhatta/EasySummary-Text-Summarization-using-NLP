@@ -494,36 +494,16 @@ section{
 }
 
 /*sentiment section starts for boxes */
-section{
-    padding: 2rem 9%;
-    margin-top: 10rem;
-}
+
 #bg{
     margin-top: 10rem;
     background: no-repeat;
     background-position: center;
     background-size: cover;
 }
-.sentiment{
-    min-height: 100vh;
-    padding-top: 15rem;
-    
-}
-.sentiment form .box{
-    width: 100%;
-    padding: 1rem 1.2rem;
-    border-radius: .5rem;
-    font-size: 1.6rem;
-    background: none;
-    text-transform: none;
-    color: var(--main-color);
-    border: var(--border);
-    margin: .7rem 0;
 
-}
-.sentiment form textarea{
-    resize: none;
-}
+  
+
 
 
 

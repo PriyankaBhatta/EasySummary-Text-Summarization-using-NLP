@@ -30,12 +30,10 @@
                 
             </div>
         </div>
-    </section>
+    </section> 
     
     <!--header section starts here-->
     <header class="header">
-
-        <div id="menu-btn" class="fas fa-bars"></div>
         
         <a href="/home.html#home" class="logo"> EasySummary<i class="fas fa-file"></i></a>
         
@@ -51,38 +49,43 @@
     <h1 class="heading"> Sentiment <span>Analysis</span></h1>
 
     <form method="post" action="{% url 'sentiment' %}" enctype="multipart/form-data"> 
-        {% csrf_token %}
+        {% csrf_token %} 
         
         <!--for input textarea-->
+        <div>
         <textarea name="text" placeholder="Enter text here to perform sentiment analysis." 
-        class="box" id="" cols="30" rows="10" required>{{ input_text }}</textarea>      
-        <br>
+        class="box" id="" cols="30" rows="10" required
+        style="width: 100%; max-weight: 600px; min-width:300px; height:72px; padding: 1rem 1.2rem; border-radius: .5rem; font-size: 1.6rem; background: none; text-transform: none; color: var(--main-color); border: var(--border); margin: .7rem 0;">{{ input_text }}</textarea>      
+        <br> 
+        </div>
         
         <!--sentiment analysis button to show output-->
-        <button id="sentiment-button" class="btn" onclick="submitForm()">Perform Sentiment Analysis</button>
-
+        <div style="display: flex; justify-content: center">
+        <button id="button" class="btn" onclick="submitForm()" style="font-size: 1.4rem; ">Perform Sentiment Analysis</button>
+        </div>
     </form>
 
     {% if sentiment %}
-    <div class="output">
-        <h2>Output</h2>
-        <p>Your input text: {{ input_text }}</p>
-        <p>Sentiment: {{ sentiment }}</p>
-        <p>Sentiment score: {{ score }}</p>
-    </div>
-    {% endif %}
+    <div style="display: flex; justify-content: space-around; align-items: center; border: var(--border); color: var(--main-color); padding: 20px; margin: 20px 0;">
 
-    <!--this is the textarea which shows output sentiment analysis.
-    <form>
-        <br>
-        <textarea name="text" placeholder="Your sentiment analysis will appear here." class="box" id="" cols="30" rows="10" required>{{ output_text }}</textarea>
-    </form>-->
-    <br>
-    
-</section> 
+        <div style="text-align: center;">
+            <p style="margin: 0; font-size: 16px;">Sentiment:</p>
+            <h2 style="margin: 0; font-size: 24px; font-weight: bold;">{{ sentiment }}</h2>
+        </div>
+
+        <div style="text-align: center; border-left: var(--border); padding-left: 20px; margin-left: 20px;">
+            <p style="margin: 0; font-size: 16px;">Sentiment score:</p>
+            <h2 style="margin: 0; font-size: 24px; font-weight: bold;">{{ score }}</h2>
+        </div>
+    </div>
+{% endif %}
+   
+</section>    
 
 </div>
 <!--sentiment analysis section ends here-->
+
+
 
 <!-- footer section starts  -->
 
@@ -122,4 +125,5 @@
 <!-- footer section ends -->
 
 </body>
+
 </html>
