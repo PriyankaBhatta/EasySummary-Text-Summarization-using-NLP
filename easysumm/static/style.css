@@ -80,11 +80,7 @@ html{
 section{
     padding: 2rem 9%;
 }
-#bg{
-    background: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
+
 .home{
     min-height: 100vh;
     padding-top: 12rem;
