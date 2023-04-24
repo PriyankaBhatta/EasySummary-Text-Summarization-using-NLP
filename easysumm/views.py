@@ -19,6 +19,8 @@ from sklearn.preprocessing import Normalizer
 from lexrank import LexRank
 nltk.download('stopwords')
 stop_words = stopwords.words('english')
+from nltk.sentiment import SentimentIntensityAnalyzer
+nltk.download('vader_lexicon')
 
 
 #this function displays the home.html page 
@@ -262,24 +264,39 @@ def summarizenow(request):
                                          'input_text': input_text, 
                                          'summary':summary,   
                                          })
-
-
-#performs sentiment    
 def sentiment(request):
     if request.method == 'POST':
         text = request.POST['text']
-        blob = TextBlob(text)
-        sentiment_score = blob.sentiment.polarity
 
-        if sentiment_score > 0:
+        #initialize the sentiment intensity analyzer object
+        sia = SentimentIntensityAnalyzer()
+
+        #obtain the sentiment scores for the input text
+        sentiment_score = sia.polarity_scores(text)
+
+        #classify the sentiment as positive, negative or neutral
+        if sentiment_score['compound'] > 0.05:
             sentiment = 'Positive'
-        elif sentiment_score < 0:
+        elif sentiment_score['compound'] < -0.05:
             sentiment = 'Negative'
         else:
             sentiment = 'Neutral'
+        
+        #calculate the score percentage and round to 2 decimal places
+        score_percent = round((sentiment_score['compound'] + 1) * 50, 2)
 
-        context = {'sentiment': sentiment, 'score': sentiment_score, 'input_text': text}
+        # format the score as percentage string
+        score_percent_str = f'{score_percent}%'
+
+        # create the context dictionary to be passed to the template
+        context = {'sentiment': sentiment, 'score': score_percent_str, 'input_text': text}
+        # render the template with the context dictionary
         return render(request, 'sentiment.html', context)
     else:
+        # if the request is not POST, render the template with an empty context dictionary
         context = {'output_text': ''}
         return render(request, 'sentiment.html', context)
+    
+'''a score between 0-33% might be considered negative, a score between 34-66% might be considered neutral,
+ and a score between 67-100% might be considered positive.
+These thresholds can vary depending on the specific use case and context.'''
