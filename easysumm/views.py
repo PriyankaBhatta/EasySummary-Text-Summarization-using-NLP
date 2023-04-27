@@ -19,8 +19,12 @@ from sklearn.preprocessing import Normalizer
 from lexrank import LexRank
 nltk.download('stopwords')
 stop_words = stopwords.words('english')
+
 from nltk.sentiment import SentimentIntensityAnalyzer
 nltk.download('vader_lexicon')
+
+import spacy
+nlp = spacy.load("en_core_web_sm")
 
 
 #this function displays the home.html page 
@@ -300,3 +304,14 @@ def sentiment(request):
 '''a score between 0-33% might be considered negative, a score between 34-66% might be considered neutral,
  and a score between 67-100% might be considered positive.
 These thresholds can vary depending on the specific use case and context.'''
+
+
+def ner(request):
+    if request.method == 'POST':
+        nlp = spacy.load('en_core_web_sm')
+        input_text = request.POST['text']
+        doc = nlp(input_text)
+        entities = [(entity.text, entity.label_) for entity in doc.ents]
+        return render(request, 'ner.html', {'input_text': input_text, 'entities': entities})
+    else:
+        return render(request, 'ner.html')
