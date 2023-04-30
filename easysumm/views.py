@@ -23,8 +23,13 @@ stop_words = stopwords.words('english')
 from nltk.sentiment import SentimentIntensityAnalyzer
 nltk.download('vader_lexicon')
 
-import spacy
-nlp = spacy.load("en_core_web_sm")
+
+from nltk import word_tokenize, pos_tag, ne_chunk
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('maxent_ne_chunker')
+nltk.download('words')
+
 
 
 #this function displays the home.html page 
@@ -305,13 +310,29 @@ def sentiment(request):
  and a score between 67-100% might be considered positive.
 These thresholds can vary depending on the specific use case and context.'''
 
+'''
+def ner(request):
+    if request.method == 'POST':
+        input_text = request.POST['text']
+        tokens = word_tokenize(input_text)
+        tagged = pos_tag(tokens)
+        entities = ne_chunk(tagged)
+        named_entities = []
+        for chunk in entities:
+            if hasattr(chunk, 'label'):
+                named_entities.append((chunk[0][0], chunk.label()))
+        return render(request, 'ner.html', {'input_text': input_text, 'entities': named_entities})
+    else:
+        return render(request, 'ner.html')
+ '''   
+import spacy
 
 def ner(request):
     if request.method == 'POST':
-        nlp = spacy.load('en_core_web_sm')
         input_text = request.POST['text']
+        nlp = spacy.load('en_core_web_sm')
         doc = nlp(input_text)
-        entities = [(entity.text, entity.label_) for entity in doc.ents]
-        return render(request, 'ner.html', {'input_text': input_text, 'entities': entities})
+        named_entities = [(ent.text, ent.label_) for ent in doc.ents]
+        return render(request, 'ner.html', {'input_text': input_text, 'entities': named_entities})
     else:
         return render(request, 'ner.html')

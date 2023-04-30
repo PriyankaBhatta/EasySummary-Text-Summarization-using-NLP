@@ -73,6 +73,15 @@
             <button id="button" class="btn" onclick="submitForm()" style="font-size: 1.4rem; ">Perform NER</button>
             </div>
         </form>
+        {% if entities %}
+    <h2>Named Entities:</h2>
+    <ul>
+        {% for entity in entities %}
+            <li>{{ entity.0 }} - {{ entity.1 }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
      </section>
     </div>
 
