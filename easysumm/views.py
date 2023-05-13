@@ -57,7 +57,9 @@ def summarize(input_text, summary_length):    #takes two argument input_text and
     summary = [sentences[i] for i in top_sentence_indices]                          
     #returns the summarized text as a string
     return ' '.join(summary) 
-                                                                                    
+
+
+
 #this is the function that perform lsa for text summary
 def summarize_lsa(input_text, summary_length):
     #remove numbers like [17], [71], etc from the input string
@@ -195,13 +197,13 @@ def summarizenow(request):
             summary_length = request.POST.get('summary_length', 'small')
             #set summary length according to user selection
             if summary_length == 'small':
-                summarization_algorithm = summarize_lsa
+                summarization_algorithm = summarize_lexrank
                 summary_length = 9
             elif summary_length == 'medium':
                 summarization_algorithm = summarize_lsa
                 summary_length = 15
             else:
-                summarization_algorithm = summarize_lsa
+                summarization_algorithm = summarize
                 summary_length = 19
             
             #generate summary of the extracted text
@@ -223,10 +225,10 @@ def summarizenow(request):
                     summary_length = 9
                 elif summary_length == 'medium':
                     summarization_algorithm = summarize_lsa
-                    summary_length = 15
+                    summary_length = 13
                 else:
                     summarization_algorithm = summarize
-                    summary_length = 19
+                    summary_length = 15
                 #generate summary of extracted paragraphs
                 summary = summarization_algorithm(input_text, summary_length)
                 #set the output text to the summary
@@ -245,10 +247,10 @@ def summarizenow(request):
                         summary_length = 9
                     elif summary_length == 'medium':
                         summarization_algorithm = summarize_lsa
-                        summary_length = 15
+                        summary_length = 13
                     else:
                         summarization_algorithm = summarize
-                        summary_length = 19
+                        summary_length = 16
                     
                     #generate summary of the extracted text
                     summary = summarization_algorithm(input_text, summary_length)
