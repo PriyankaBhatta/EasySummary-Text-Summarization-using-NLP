@@ -267,7 +267,7 @@
     <section class="summarizenow" id="summarizenow">
         <h1 class="heading"> Summary <span>Summarize Now</span></h1>
     
-        <form method="post" action="{% url 'summarizenow' %}" enctype="multipart/form-data"> 
+        <form id='summaryForm' method="post" action="{% url 'summarizenow' %}" enctype="multipart/form-data"> 
             {% csrf_token %}
 
             <!--for uploading a file, for example "Upload Document/PDF"-->
@@ -445,7 +445,11 @@
             summaryLength.disabled = false;
             document.forms[0].submit();
         }
+
+        
+    
           
+    
     
 
     </script> 
