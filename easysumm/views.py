@@ -1,8 +1,7 @@
 
 #Made by: Priyanka Bhatta
 #This code is a Python script for a web application.  
-from django.shortcuts import redirect
-from textblob import TextBlob
+
 from django.shortcuts import render                         #render a Django template with context data and return an HttpResponse object with the resulting HTML content.
 import requests                                             #library used for making HTTP requests to web pages
 from bs4 import BeautifulSoup                               #library used for web scraping and parsing HTML/XML documents
@@ -124,7 +123,7 @@ def summarize_lexrank(input_text, summary_length):
     summary = [sentences[i] for i in top_sentence_indices]
     # returns the summarized text as a string
     return ' '.join(summary)
-'''
+
 # THIS FUNCTION WILL ONLY EXTRACT <p> TAGS FROM URL CONTENT
 def get_paragraphs(url):
     # send a GET request to the URL
@@ -145,41 +144,6 @@ def get_paragraphs(url):
         clean_paragraphs.append(clean_text)       
     # join the cleaned paragraphs into a single string separated by newlines
     return '\n'.join(clean_paragraphs)            
-'''
-def get_paragraphs(url):
-    # Send a GET request to the URL
-    r = requests.get(url)
-    # Create a BeautifulSoup object from the HTML content
-    soup = BeautifulSoup(r.text, 'html.parser')
-
-    # Find the main content by considering different common patterns
-    main_content = soup.find('div', {'class': 'main-content'})  # Example: Main content within a specific div class
-    if not main_content:
-        main_content = soup.find('div', {'id': 'main'})  # Example: Main content within a specific div id
-    if not main_content:
-        main_content = soup.find('article')  # Example: Main content within an article tag
-    if not main_content:
-        main_content = soup.find('body')  # Example: Main content within the body tag
-
-    if main_content:
-        # Find all paragraph tags within the main content
-        paragraphs = main_content.find_all('p')
-        # Create an empty list to store the cleaned paragraphs
-        clean_paragraphs = []
-        # Loop over each paragraph tag
-        for p in paragraphs:
-            # Extract the text content of the paragraph
-            text = p.get_text()
-            # Clean the text by removing numbers, special characters, etc.
-            clean_text = re.sub(r'\[\d+\]', '', text).strip()
-            # Add the cleaned text to the list of cleaned paragraphs
-            if clean_text:
-                clean_paragraphs.append(clean_text)
-        # Join the cleaned paragraphs into a single string separated by newlines
-        return '\n\n'.join(clean_paragraphs)
-    else:
-        return None
-
 
 
 def extract_file_text(file):
@@ -236,15 +200,15 @@ def summarizenow(request):
                 summary_length = 9
             elif summary_length == 'medium':
                 summarization_algorithm = summarize_lsa
-                summary_length = 15
+                summary_length = 13
             else:
                 summarization_algorithm = summarize
-                summary_length = 19
+                summary_length = 15
             
             #generate summary of the extracted text
             summary = summarization_algorithm(input_text, summary_length)
             #set the output text to the summary
-            output_text = summary
+            output_text = summary 
 
         except:
             try:
@@ -267,7 +231,7 @@ def summarizenow(request):
                 #generate summary of extracted paragraphs
                 summary = summarization_algorithm(input_text, summary_length)
                 #set the output text to the summary
-                output_text = summary
+                output_text = summary if summary else 'The URL doesnt have valid text to be summarized.'
      
             except:
                 #if text is entered in input textarea form 
@@ -294,7 +258,7 @@ def summarizenow(request):
 
                 else:
                     #this error message is shown when no valid input is found
-                    output_text = 'The file or URL doesnt have valid text to be summarized.'
+                    output_text = 'The Url and file doesnt have valid text to be summarized.'
 
  
     #render the home page with output text, input text and summary
@@ -302,7 +266,7 @@ def summarizenow(request):
                                          'input_text': input_text, 
                                          'summary':summary,   
                                          })
-   
+
 
 #sentiment analysis
 def sentiment(request):
