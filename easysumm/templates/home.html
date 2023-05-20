@@ -273,6 +273,8 @@
         <form id='summaryForm' method="POST" action="{% url 'summarizenow' %}" enctype="multipart/form-data"> 
             {% csrf_token %}
 
+            
+
             <!--for uploading a file, for example "Upload Document/PDF"-->
             <input type="file" name="file" id="fileInput" class="box" required>
             <br>
@@ -303,7 +305,8 @@
             <br>
             <textarea name = "text" placeholder="Your summary will appear here." class="box" id="" cols="30" rows="10">{{ output_text }}</textarea>
         </form>
-        <button id="reload-button" class="btn">Reload</button>
+        
+        <button id="reload-button" class="btn" style="font-size: 12px; padding: 4px 8px;">Reload</button>
 
     </section> 
 </div>
