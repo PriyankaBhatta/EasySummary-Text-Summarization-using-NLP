@@ -313,7 +313,4 @@ def sentiment(request):
         context = {'output_text': ''}
         return render(request, 'sentiment.html', context)
     
-'''a score between 0-33% might be considered negative, a score between 34-66% might be considered neutral,
- and a score between 67-100% might be considered positive.
-These thresholds can vary depending on the specific use case and context.'''
 
