@@ -2,7 +2,6 @@
 #Made by: Priyanka Bhatta
 #This code is a Python script for a web application.  
 
-from telnetlib import theNULL
 from django.shortcuts import render                         #render a Django template with context data and return an HttpResponse object with the resulting HTML content.
 import requests                                             #library used for making HTTP requests to web pages
 from bs4 import BeautifulSoup                               #library used for web scraping and parsing HTML/XML documents
@@ -202,20 +201,18 @@ def summarizenow(request):
                 summary_length = 9
             elif summary_length == 'medium':
                 summarization_algorithm = summarize_lsa
-                summary_length = 11
+                summary_length = 15
             else:
                 summarization_algorithm = summarize
-                summary_length = 13
+                summary_length = 19
             
             #generate summary of the extracted text
             summary = summarization_algorithm(input_text, summary_length)
             #set the output text to the summary
-            output_text = summary 
+            output_text = summary
 
         except:
-            output_text = 'The algorithm cannot generate summary from this input file.'
-            
-            
+            output_text = 'The algorithm cannot extarct text from this file.'
             try:
                 #if a URL is entered
                 url = request.POST['urlInput']
@@ -229,46 +226,42 @@ def summarizenow(request):
                     summary_length = 9
                 elif summary_length == 'medium':
                     summarization_algorithm = summarize_lsa
-                    summary_length = 11
+                    summary_length = 13
                 else:
                     summarization_algorithm = summarize
-                    summary_length = 13
+                    summary_length = 15
                 #generate summary of extracted paragraphs
                 summary = summarization_algorithm(input_text, summary_length)
                 #set the output text to the summary
-                output_text = summary 
+                output_text = summary
      
             except:
-                output_text = 'The URL doesnt have valid text to be summarized.'
-
-                try:
-                    #if text is entered in input textarea form 
-                    input_text = request.POST['text']
-                    #check if the input text is not empty
-                    if len(input_text.strip()) >0:
-                        #default summary length is set to small
-                        summary_length = request.POST.get('summary_length', 'small')
+                #if text is entered in input textarea form 
+                input_text = request.POST['text']
+                #check if the input text is not empty
+                if len(input_text.strip()) >0:
+                    #default summary length is set to small
+                    summary_length = request.POST.get('summary_length', 'small')
                     #user can select the desired summary length
                     if summary_length == 'small':
                         summarization_algorithm = summarize_lexrank
                         summary_length = 9
                     elif summary_length == 'medium':
                         summarization_algorithm = summarize_lsa
-                        summary_length = 11
+                        summary_length = 13
                     else:
                         summarization_algorithm = summarize
-                        summary_length = 13
+                        summary_length = 16
                     
                     #generate summary of the extracted text
                     summary = summarization_algorithm(input_text, summary_length)
                     #set the output text to summary
                     output_text = summary
 
-                except:
+                else:
                     #this error message is shown when no valid input is found
-                    output_text = 'Algorithm cannot generate text from this file/URL.'
+                    output_text = 'The file or URL doesnt have valid text to be summarized.'
 
- 
     #render the home page with output text, input text and summary
     return render(request, 'home.html', {'output_text':output_text,
                                          'input_text': input_text, 
@@ -276,9 +269,6 @@ def summarizenow(request):
                                          })
 
 
-
-
-    
 #sentiment analysis
 def sentiment(request):
     if request.method == 'POST':

@@ -20,6 +20,9 @@
 
     <link rel="shortcut icon" href="{% static 'img/favicon1.ico' %}" type="image/x-icon">
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    
 </head>
 <body>
     
@@ -298,9 +301,9 @@
         <!--this is the textarea which shows output summary.-->
         <form>
             <br>
-            <textarea name = "text" placeholder="Your summary will appear here." class="box" id="" cols="30" rows="10">{{ summary }}</textarea>
+            <textarea name = "text" placeholder="Your summary will appear here." class="box" id="" cols="30" rows="10">{{ output_text }}</textarea>
         </form>
-    
+        <button id="reload-button" class="btn">Reload</button>
 
     </section> 
 </div>
@@ -445,11 +448,28 @@
             summaryLength.disabled = false;
             document.forms[0].submit();
         }
+        
 
-        // Event handler for the beforeunload event
-        window.onbeforeunload = function() {
-            window.location.href = 'http://127.0.0.1:8000/#summarizenow';
-        };
+        document.addEventListener('DOMContentLoaded', function() {
+            const reloadButton = document.getElementById('reload-button');
+            const summaryForm = document.getElementById('summaryForm');
+            const outputTextarea = document.querySelector('#summarizenow textarea[name="text"]');
+          
+            reloadButton.addEventListener('click', function() {
+              summaryForm.reset();
+              outputTextarea.value = '';
+              window.location.href = window.location.href.split('#')[0];
+            });
+          });
+          
+          
+          
+          
+          
+          
+          
+          
+      
 
     </script> 
     
