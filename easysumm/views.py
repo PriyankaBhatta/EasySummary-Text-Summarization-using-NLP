@@ -12,15 +12,16 @@ import nltk                                                 #Natural Language To
 from nltk.corpus import stopwords                           #a list of common words (like "the", "and", etc.) that are often removed from text during text analysis.
 from sklearn.feature_extraction.text import TfidfVectorizer #a class used for converting text data into a numerical matrix using the TF-IDF algorithm.
 from nltk.tokenize import sent_tokenize                     #a function from nltk used for tokenizing text into individual sentences.
-from sklearn.decomposition import TruncatedSVD
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import Normalizer
-from lexrank import LexRank
+from sklearn.decomposition import TruncatedSVD              #library for performing dimensionality reduction using TruncatedSVD
+from sklearn.pipeline import make_pipeline                  # library for creating a pipeline of data transformation steps
+from sklearn.preprocessing import Normalizer                # libary for normalizing data
+from lexrank import LexRank                                 #library to implement lexrank algorithm
 nltk.download('stopwords')
 stop_words = stopwords.words('english')
 
-from nltk.sentiment import SentimentIntensityAnalyzer
-nltk.download('vader_lexicon')
+
+from nltk.sentiment import SentimentIntensityAnalyzer      #library to perform sentiment analysis
+nltk.download('vader_lexicon')                             
 
 #this function displays the home.html page 
 def home(request):
@@ -178,6 +179,8 @@ def extract_file_text(file):
 
 
     return '\n'.join(clean_paragraphs) # join the cleaned paragraphs with newlines and return as a single string
+
+
 
 
 def summarizenow(request):
